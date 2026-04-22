@@ -114,13 +114,13 @@ class Player:
     # ------------------------------------------------------------------
     # JUMP — chamado pelo input handler quando o jogador pressiona Espaço
     # ------------------------------------------------------------------
-    def jump(self):
-        # Só pula se estiver no chão — sem double-jump na Fase 1.
+    def jump(self) -> bool:
+        """Pula se estiver no chão. Retorna True se o pulo foi executado."""
         if self.on_ground:
-            # Atribuímos um impulso negativo de uma vez: o cubo dispara pra cima.
-            # A gravidade no update() vai desacelerar esse impulso frame a frame.
             self.velocity_y = JUMP_IMPULSE
             self.on_ground = False
+            return True
+        return False
 
     # ------------------------------------------------------------------
     # DRAW — renderiza o cubo (rotacionado) na tela

@@ -25,7 +25,9 @@ def main():
     clock = pygame.time.Clock()
 
     # Cria o gerenciador de cenas já apontando para a GameplayScene (Fase 1).
-    manager = SceneManager(GameplayScene())
+    scene = GameplayScene()
+    scene.set_clock(clock)
+    manager = SceneManager(scene)
 
     # --- Loop principal ---
     running = True
