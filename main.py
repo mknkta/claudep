@@ -10,7 +10,7 @@ import pygame
 
 from config import SCREEN_WIDTH, SCREEN_HEIGHT, FPS
 from src.scenes.scene_manager import SceneManager
-from src.scenes.test_scene import TestScene
+from src.scenes.gameplay_scene import GameplayScene
 
 
 def main():
@@ -19,13 +19,13 @@ def main():
 
     # display.set_mode devolve a Surface principal (a "tela").
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-    pygame.display.set_caption("Meu Jogo")
+    pygame.display.set_caption("Meu Jogo — Fase 1")
 
     # Clock controla o FPS e fornece o delta time entre frames.
     clock = pygame.time.Clock()
 
-    # Cria o gerenciador de cenas já apontando para a cena de teste.
-    manager = SceneManager(TestScene())
+    # Cria o gerenciador de cenas já apontando para a GameplayScene (Fase 1).
+    manager = SceneManager(GameplayScene())
 
     # --- Loop principal ---
     running = True
