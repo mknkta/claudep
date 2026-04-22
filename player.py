@@ -73,6 +73,10 @@ class Player:
         if self.mode == "ship":
             if space_held:
                 self.velocity_y -= SHIP_THRUST
+            else:
+                # soltou o espaço: amortece o impulso de subida rapidamente
+                if self.velocity_y < 0:
+                    self.velocity_y *= 0.80
             # limita velocidade vertical
             self.velocity_y = max(-VEL_MAX, min(VEL_MAX, self.velocity_y))
             # ângulo segue a direção do movimento
@@ -87,9 +91,13 @@ class Player:
         # colisão com chão
         if self.rect.bottom >= GROUND_Y:
             self.rect.bottom = GROUND_Y
-            self.velocity_y  = 0.0
-            self.on_ground   = True
-            if self.mode == "cube":
+            if self.mode == "ship":
+                # nave: só para de cair, mas NÃO zera velocity se já estava subindo
+                if self.velocity_y > 0:
+                    self.velocity_y = 0.0
+            else:
+                self.velocity_y = 0.0
+                self.on_ground  = True
                 self._angle = round(self._angle / 90) * 90
         else:
             if self.mode == "cube":

@@ -1,7 +1,7 @@
 MUSIC    = "assets/music/level2.ogg"
 DURATION = 90.0
 
-# Fase 2: primeira metade cubo (0-40s), portal em 40s, segunda metade nave (40-90s)
+# Fase 2: cubo (0-36s), portal em 36s (40%), nave (36-90s)
 # Espinhos de teto (ceiling_spike) formam corredor estreito com espinhos do chão.
 # Nave: segurar ESPAÇO sobe, soltar desce.
 
@@ -134,102 +134,89 @@ OBSTACLES = [
     {"time": 39.04, "type": "spike", "size": "medium"},
 
     # ── PORTAL (40s) — troca pra modo nave ───────────────────────────
-    {"time": 40.0,  "type": "portal", "target_mode": "ship"},
+    {"time": 36.0,  "type": "portal", "target_mode": "ship"},
 
-    # ── PARTE 2: NAVE (40–90s) ────────────────────────────────────────
-    # Padrão: espinho no chão (Spike) + espinho no teto (CeilingSpike)
-    # não alinhados, forçando o player a "vibrar" no meio do corredor.
-    # Regra: gap de pelo menos 1.0s entre obstáculos do mesmo lado.
+    # ── PARTE 2: NAVE (36–90s) ───────────────────────────────────────────
+    # HARD MODE: muros estreitos, bolas duplas/triplas, alta velocidade.
+    # GROUND_Y=600, CEILING_Y=40 → meio=320.
 
-    # bloco 1 — espinho chão, depois espinho teto
-    {"time": 42.0,  "type": "spike",         "size": "large"},
-    {"time": 43.2,  "type": "ceiling_spike",  "size": "large"},
+    # --- intro rápida ---
+    {"time": 38.0, "type": "spike",        "size": "large"},
+    {"time": 38.6, "type": "ceiling_spike","size": "large"},
 
-    {"time": 44.4,  "type": "spike",         "size": "medium"},
-    {"time": 45.6,  "type": "ceiling_spike",  "size": "medium"},
+    # --- primeiro muro + bola imediata ---
+    {"time": 40.0, "type": "wall",       "gap_y": 320, "gap_h": 200},
+    {"time": 40.8, "type": "spike_ball", "base_y": 200, "amplitude": 110, "speed": 2.2},
+    {"time": 40.8, "type": "spike_ball", "base_y": 440, "amplitude": 110, "speed": 2.2},
 
-    {"time": 46.8,  "type": "spike",         "size": "large"},
-    {"time": 47.2,  "type": "spike",         "size": "medium"},
-    {"time": 48.0,  "type": "ceiling_spike",  "size": "large"},
+    # --- muro alto + dupla bola em velocidades diferentes ---
+    {"time": 43.0, "type": "wall",       "gap_y": 240, "gap_h": 185},
+    {"time": 43.8, "type": "spike_ball", "base_y": 180, "amplitude": 90, "speed": 3.0},
+    {"time": 43.8, "type": "spike_ball", "base_y": 460, "amplitude": 90, "speed": 2.5},
 
-    {"time": 49.0,  "type": "ceiling_spike",  "size": "medium"},
-    {"time": 50.0,  "type": "spike",         "size": "large"},
+    # --- três bolas em sequência rápida ---
+    {"time": 46.0, "type": "spike_ball", "base_y": 320, "amplitude": 130, "speed": 2.8},
+    {"time": 47.2, "type": "spike_ball", "base_y": 200, "amplitude": 100, "speed": 3.2},
+    {"time": 48.4, "type": "spike_ball", "base_y": 440, "amplitude": 100, "speed": 2.6},
 
-    {"time": 51.0,  "type": "spike",         "size": "medium"},
-    {"time": 51.4,  "type": "spike",         "size": "large"},
-    {"time": 52.0,  "type": "ceiling_spike",  "size": "large"},
-    {"time": 52.4,  "type": "ceiling_spike",  "size": "medium"},
+    # --- muro baixo ---
+    {"time": 49.5, "type": "wall",       "gap_y": 400, "gap_h": 180},
+    {"time": 50.3, "type": "spike_ball", "base_y": 320, "amplitude": 120, "speed": 3.0},
+    {"time": 50.3, "type": "spike_ball", "base_y": 160, "amplitude":  80, "speed": 2.4},
 
-    {"time": 53.5,  "type": "spike",         "size": "large"},
-    {"time": 54.5,  "type": "ceiling_spike",  "size": "large"},
+    # --- dois muros seguidos, gaps alternados ---
+    {"time": 52.5, "type": "wall",       "gap_y": 220, "gap_h": 175},
+    {"time": 54.0, "type": "wall",       "gap_y": 420, "gap_h": 175},
 
-    {"time": 55.5,  "type": "spike",         "size": "medium"},
-    {"time": 55.9,  "type": "spike",         "size": "large"},
-    {"time": 56.5,  "type": "ceiling_spike",  "size": "medium"},
-    {"time": 57.0,  "type": "ceiling_spike",  "size": "large"},
+    # --- corredor de bolas ---
+    {"time": 55.5, "type": "spike_ball", "base_y": 180, "amplitude": 110, "speed": 3.5},
+    {"time": 55.5, "type": "spike_ball", "base_y": 460, "amplitude": 110, "speed": 3.5},
+    {"time": 57.0, "type": "spike_ball", "base_y": 320, "amplitude": 140, "speed": 2.0},
 
-    {"time": 58.0,  "type": "spike",         "size": "large"},
-    {"time": 58.8,  "type": "ceiling_spike",  "size": "large"},
-    {"time": 59.6,  "type": "spike",         "size": "medium"},
+    # --- muro central estreito + bola dentro do gap ---
+    {"time": 59.0, "type": "wall",       "gap_y": 320, "gap_h": 170},
+    {"time": 59.5, "type": "spike_ball", "base_y": 320, "amplitude": 100, "speed": 4.0},
 
-    {"time": 60.4,  "type": "ceiling_spike",  "size": "large"},
-    {"time": 61.0,  "type": "spike",         "size": "large"},
-    {"time": 61.4,  "type": "spike",         "size": "medium"},
+    # --- três muros seguidos, gaps alternados ---
+    {"time": 61.5, "type": "wall",       "gap_y": 240, "gap_h": 170},
+    {"time": 63.0, "type": "wall",       "gap_y": 400, "gap_h": 170},
+    {"time": 64.5, "type": "wall",       "gap_y": 280, "gap_h": 170},
 
-    {"time": 62.0,  "type": "ceiling_spike",  "size": "medium"},
-    {"time": 62.4,  "type": "ceiling_spike",  "size": "large"},
-    {"time": 63.0,  "type": "spike",         "size": "large"},
+    # --- quatro bolas simultâneas ---
+    {"time": 66.0, "type": "spike_ball", "base_y": 160, "amplitude":  70, "speed": 2.5},
+    {"time": 66.0, "type": "spike_ball", "base_y": 280, "amplitude":  70, "speed": 3.5},
+    {"time": 66.0, "type": "spike_ball", "base_y": 370, "amplitude":  70, "speed": 3.0},
+    {"time": 66.0, "type": "spike_ball", "base_y": 480, "amplitude":  70, "speed": 2.8},
 
-    {"time": 64.0,  "type": "spike",         "size": "medium"},
-    {"time": 64.4,  "type": "spike",         "size": "large"},
-    {"time": 65.0,  "type": "ceiling_spike",  "size": "large"},
-    {"time": 65.4,  "type": "ceiling_spike",  "size": "medium"},
+    # --- muro + duas bolas ---
+    {"time": 68.5, "type": "wall",       "gap_y": 320, "gap_h": 165},
+    {"time": 69.0, "type": "spike_ball", "base_y": 200, "amplitude": 100, "speed": 3.8},
+    {"time": 69.0, "type": "spike_ball", "base_y": 440, "amplitude": 100, "speed": 3.8},
 
-    {"time": 66.5,  "type": "spike",         "size": "large"},
-    {"time": 67.3,  "type": "ceiling_spike",  "size": "large"},
-    {"time": 68.1,  "type": "spike",         "size": "large"},
-    {"time": 68.5,  "type": "spike",         "size": "medium"},
+    # --- quatro muros consecutivos (inferno) ---
+    {"time": 71.5, "type": "wall",       "gap_y": 220, "gap_h": 160},
+    {"time": 73.0, "type": "wall",       "gap_y": 420, "gap_h": 160},
+    {"time": 74.5, "type": "wall",       "gap_y": 260, "gap_h": 160},
+    {"time": 76.0, "type": "wall",       "gap_y": 380, "gap_h": 160},
 
-    {"time": 69.0,  "type": "ceiling_spike",  "size": "large"},
-    {"time": 69.4,  "type": "ceiling_spike",  "size": "medium"},
-    {"time": 70.0,  "type": "spike",         "size": "large"},
+    # --- tripla bola pós-muros ---
+    {"time": 77.5, "type": "spike_ball", "base_y": 180, "amplitude": 100, "speed": 4.0},
+    {"time": 77.5, "type": "spike_ball", "base_y": 320, "amplitude": 140, "speed": 3.5},
+    {"time": 77.5, "type": "spike_ball", "base_y": 460, "amplitude": 100, "speed": 4.0},
 
-    {"time": 71.0,  "type": "spike",         "size": "medium"},
-    {"time": 71.5,  "type": "spike",         "size": "large"},
-    {"time": 72.0,  "type": "ceiling_spike",  "size": "large"},
-    {"time": 72.5,  "type": "ceiling_spike",  "size": "large"},
+    # --- muro estreito + bola rápida ---
+    {"time": 80.0, "type": "wall",       "gap_y": 320, "gap_h": 155},
+    {"time": 80.5, "type": "spike_ball", "base_y": 320, "amplitude": 130, "speed": 5.0},
 
-    {"time": 73.5,  "type": "spike",         "size": "large"},
-    {"time": 74.0,  "type": "ceiling_spike",  "size": "large"},
-    {"time": 74.5,  "type": "spike",         "size": "medium"},
-    {"time": 75.0,  "type": "ceiling_spike",  "size": "medium"},
-
-    {"time": 76.0,  "type": "spike",         "size": "large"},
-    {"time": 76.5,  "type": "ceiling_spike",  "size": "large"},
-    {"time": 77.0,  "type": "spike",         "size": "large"},
-    {"time": 77.5,  "type": "ceiling_spike",  "size": "large"},
-
-    {"time": 78.5,  "type": "spike",         "size": "medium"},
-    {"time": 79.0,  "type": "ceiling_spike",  "size": "large"},
-    {"time": 79.5,  "type": "spike",         "size": "large"},
-    {"time": 80.0,  "type": "ceiling_spike",  "size": "medium"},
-
-    {"time": 81.0,  "type": "spike",         "size": "large"},
-    {"time": 81.5,  "type": "ceiling_spike",  "size": "large"},
-    {"time": 82.0,  "type": "spike",         "size": "medium"},
-    {"time": 82.5,  "type": "ceiling_spike",  "size": "large"},
-
-    {"time": 83.5,  "type": "spike",         "size": "large"},
-    {"time": 84.0,  "type": "ceiling_spike",  "size": "large"},
-    {"time": 84.5,  "type": "spike",         "size": "large"},
-    {"time": 85.0,  "type": "ceiling_spike",  "size": "medium"},
-
-    {"time": 86.0,  "type": "spike",         "size": "large"},
-    {"time": 86.5,  "type": "ceiling_spike",  "size": "large"},
-    {"time": 87.0,  "type": "spike",         "size": "medium"},
-    {"time": 87.5,  "type": "ceiling_spike",  "size": "large"},
-
-    {"time": 88.5,  "type": "spike",         "size": "large"},
-    {"time": 89.0,  "type": "ceiling_spike",  "size": "large"},
-    {"time": 89.5,  "type": "spike",         "size": "medium"},
+    # --- CLÍMAX FINAL ---
+    {"time": 82.5, "type": "wall",       "gap_y": 240, "gap_h": 150},
+    {"time": 82.5, "type": "spike_ball", "base_y": 420, "amplitude":  90, "speed": 4.5},
+    {"time": 84.0, "type": "wall",       "gap_y": 400, "gap_h": 150},
+    {"time": 84.0, "type": "spike_ball", "base_y": 200, "amplitude":  90, "speed": 4.5},
+    {"time": 85.5, "type": "spike_ball", "base_y": 160, "amplitude":  80, "speed": 5.0},
+    {"time": 85.5, "type": "spike_ball", "base_y": 320, "amplitude": 120, "speed": 5.0},
+    {"time": 85.5, "type": "spike_ball", "base_y": 480, "amplitude":  80, "speed": 5.0},
+    {"time": 87.0, "type": "wall",       "gap_y": 320, "gap_h": 145},
+    {"time": 87.5, "type": "spike_ball", "base_y": 220, "amplitude": 110, "speed": 5.5},
+    {"time": 87.5, "type": "spike_ball", "base_y": 420, "amplitude": 110, "speed": 5.5},
 ]

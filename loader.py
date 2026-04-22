@@ -1,6 +1,6 @@
 import importlib
-from config import SCREEN_WIDTH, GROUND_Y
-from obstacles import Spike, CeilingSpike, Platform, Portal
+from config import SCREEN_WIDTH, GROUND_Y, CEILING_Y
+from obstacles import Spike, CeilingSpike, Platform, Portal, Wall, SpikeBall, PulseLaser
 
 
 class Def:
@@ -22,6 +22,25 @@ class Def:
                          width=self.params.get("width", 200))
         elif t == "portal":
             o = Portal(x=screen_x, target_mode=self.params.get("target_mode", "ship"))
+        elif t == "wall":
+            mid_y = (CEILING_Y + GROUND_Y) // 2
+            o = Wall(x=screen_x,
+                     gap_y=self.params.get("gap_y", mid_y),
+                     gap_h=self.params.get("gap_h", 210))
+        elif t == "pulse_laser":
+            mid_y = (CEILING_Y + GROUND_Y) // 2
+            import math
+            o = PulseLaser(x=screen_x,
+                           y=self.params.get("y", mid_y),
+                           freq=self.params.get("freq", 2.0),
+                           phase=self.params.get("phase", 0.0),
+                           width=self.params.get("width", 900))
+        elif t == "spike_ball":
+            mid_y = (CEILING_Y + GROUND_Y) // 2
+            o = SpikeBall(x=screen_x,
+                          base_y=self.params.get("base_y", mid_y),
+                          amplitude=self.params.get("amplitude", 120),
+                          speed=self.params.get("speed", 1.8))
         if o is not None:
             o._spawn_x = self.spawn_x
         return o

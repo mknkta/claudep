@@ -2,7 +2,7 @@ import random
 import pygame
 import audio, saves, loader, debug
 from player import Player
-from obstacles import Spike, CeilingSpike, Platform, Portal
+from obstacles import Spike, CeilingSpike, Platform, Portal, Wall, SpikeBall, PulseLaser
 from config import SCREEN_WIDTH, SCREEN_HEIGHT, GROUND_Y, CEILING_Y, COLORS, SPEED_MEDIUM
 
 GRID  = 100
@@ -122,9 +122,8 @@ class GameplayScene:
         self.player.update(dt, space_held=(self.player.mode == "ship" and space_held))
         self._sync_hscale()
 
-        # colisão com teto (modo nave)
-        if self.player.mode == "ship" and self.player.rect.top <= CEILING_Y:
-            self._die(); return
+        # if self.player.mode == "ship" and self.player.rect.top <= CEILING_Y:
+        #     self._die(); return
 
         # spawn
         while (self._idx < len(self._defs) and
@@ -134,12 +133,21 @@ class GameplayScene:
             if obj is not None:
                 self._obs.append(obj)
 
-        # reposicionar
+        # reposicionar + update de SpikeBall
         for o in self._obs:
             nx = int(o._spawn_x - self._camera_x)
             dx = nx - o.rect.x
             o.rect.x = nx
-            o.collision_rect.x += dx
+            if isinstance(o, SpikeBall):
+                o.update_y(t)
+                o._sync()
+            elif isinstance(o, Wall):
+                o._sync()
+            elif isinstance(o, PulseLaser):
+                o.update(t)
+                o._sync()
+            else:
+                o.collision_rect.x += dx
 
         self._obs = [o for o in self._obs if o.rect.right > 0]
         self._collide()
@@ -147,6 +155,11 @@ class GameplayScene:
     def _collide(self):
         pr = self.player.collision_rect
         for o in self._obs:
+            if isinstance(o, Wall):
+                # if o.collides_with(pr):
+                #     self._die(); return
+                continue
+
             if not pr.colliderect(o.collision_rect): continue
 
             if isinstance(o, Portal):
@@ -161,8 +174,10 @@ class GameplayScene:
                     self.player.velocity_y = 0.0
                     self.player.on_ground  = True
 
-            elif isinstance(o, (Spike, CeilingSpike)):
-                self._die(); return
+            elif isinstance(o, PulseLaser):
+                pass  # if o.active: self._die(); return  — desativado para teste
+            # elif isinstance(o, (Spike, CeilingSpike, SpikeBall)):
+            #     self._die(); return
 
     def _die(self):
         if self._dead: return
@@ -199,6 +214,18 @@ class GameplayScene:
         if self.player.mode == "ship":
             pygame.draw.rect(s, CEILING_COLOR, (0, 0, SCREEN_WIDTH, CEILING_Y))
             pygame.draw.line(s, (120, 100, 160), (0, CEILING_Y), (SCREEN_WIDTH, CEILING_Y), 3)
+            # espinhos contínuos no teto
+            SCOL = (255, 80, 30)
+            sh, sw = 18, 24
+            for i in range(SCREEN_WIDTH // sw + 2):
+                cx = i * sw - int(self._camera_x % sw)
+                pts = [(cx, CEILING_Y), (cx + sw, CEILING_Y), (cx + sw // 2, CEILING_Y + sh)]
+                pygame.draw.polygon(s, SCOL, pts)
+            # espinhos contínuos no chão (modo nave)
+            for i in range(SCREEN_WIDTH // sw + 2):
+                cx = i * sw - int(self._camera_x % sw)
+                pts = [(cx, GROUND_Y), (cx + sw, GROUND_Y), (cx + sw // 2, GROUND_Y - sh)]
+                pygame.draw.polygon(s, SCOL, pts)
 
         pygame.draw.line(s, COLORS["ground"], (0, GROUND_Y), (SCREEN_WIDTH, GROUND_Y), 4)
 

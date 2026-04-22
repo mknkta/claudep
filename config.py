@@ -10,7 +10,7 @@ FPS           = 60
 # GROUND_Y é o Y do topo do chão (pygame conta Y de cima pra baixo).
 GROUND_Y = 600
 GRAVITY      = 0.8   # pixels/frame²
-SHIP_THRUST  = 0.9   # força de subida da nave por frame (segurar espaço)
+SHIP_THRUST  = 2.0   # força de subida da nave por frame (segurar espaço)
 CEILING_Y    = 40    # Y mínimo antes de matar no modo nave
 
 # --- Velocidades por dificuldade (pixels/segundo) ---
