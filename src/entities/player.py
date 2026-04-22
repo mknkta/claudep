@@ -54,7 +54,7 @@ class Player:
         # --- Sprite ---
         # Tentamos carregar o arquivo de imagem. Se não existir, usamos um
         # fallback colorido para não quebrar o jogo durante o desenvolvimento.
-        sprite_path = os.path.join("assets", "sprites", "player.png")
+        sprite_path = os.path.join("assets", "sprites", "player.jpg")
         self._sprite_original: pygame.Surface | None = None
 
         if os.path.isfile(sprite_path):

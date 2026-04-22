@@ -71,7 +71,7 @@ class Spike(Obstacle):
         self._surface = self._load_sprite(w, h)
 
     def _load_sprite(self, w: int, h: int) -> pygame.Surface | None:
-        path = os.path.join("assets", "sprites", "spike.png")
+        path = os.path.join("assets", "sprites", "spike.jpg")
         if os.path.isfile(path):
             try:
                 img = pygame.image.load(path).convert_alpha()
