@@ -1,6 +1,7 @@
-import level1
+import importlib
 from config import SCREEN_WIDTH, GROUND_Y
-from obstacles import Spike, Platform
+from obstacles import Spike, CeilingSpike, Platform, Portal
+
 
 class Def:
     def __init__(self, spawn_x, obs_type, params):
@@ -9,23 +10,30 @@ class Def:
         self.params   = params
 
     def make(self, screen_x):
-        if self.obs_type == "spike":
-            s = Spike(x=screen_x, size=self.params.get("size", "medium"))
-            s._spawn_x = self.spawn_x
-            return s
-        if self.obs_type == "platform":
-            p = Platform(x=screen_x,
+        t = self.obs_type
+        o = None
+        if t == "spike":
+            o = Spike(x=screen_x, size=self.params.get("size", "medium"))
+        elif t == "ceiling_spike":
+            o = CeilingSpike(x=screen_x, size=self.params.get("size", "medium"))
+        elif t == "platform":
+            o = Platform(x=screen_x,
                          y=self.params.get("y", GROUND_Y - 180),
                          width=self.params.get("width", 200))
-            p._spawn_x = self.spawn_x
-            return p
+        elif t == "portal":
+            o = Portal(x=screen_x, target_mode=self.params.get("target_mode", "ship"))
+        if o is not None:
+            o._spawn_x = self.spawn_x
+        return o
 
-def load(world_speed: float):
-    """Retorna (music_path, defs, duration)."""
+
+def load(world_speed: float, phase: int = 1):
+    """Carrega level<phase>.py e retorna (music_path, defs, duration)."""
+    lvl = importlib.import_module(f"level{phase}")
     defs = []
-    for e in level1.OBSTACLES:
+    for e in lvl.OBSTACLES:
         spawn_x = float(e["time"]) * world_speed + SCREEN_WIDTH
         params  = {k: v for k, v in e.items() if k not in ("time", "type")}
         defs.append(Def(spawn_x, e["type"], params))
     defs.sort(key=lambda d: d.spawn_x)
-    return level1.MUSIC, defs, level1.DURATION
+    return lvl.MUSIC, defs, lvl.DURATION

@@ -2,8 +2,8 @@ import random
 import pygame
 import audio, saves, loader, debug
 from player import Player
-from obstacles import Spike, Platform
-from config import SCREEN_WIDTH, SCREEN_HEIGHT, GROUND_Y, COLORS, SPEED_MEDIUM
+from obstacles import Spike, CeilingSpike, Platform, Portal
+from config import SCREEN_WIDTH, SCREEN_HEIGHT, GROUND_Y, CEILING_Y, COLORS, SPEED_MEDIUM
 
 GRID  = 100
 SFX   = "assets/sfx/jump.wav"
@@ -12,12 +12,15 @@ BAR_C = (140, 80, 220)
 BAR_B = (40,  30,  60)
 FREEZE_TIME = 0.5
 
+# Cor do teto no modo nave
+CEILING_COLOR = (60, 50, 80)
+
 
 class Particle:
     COLORS = [(100,80,220),(160,100,255),(80,200,255),(255,200,80),(255,255,255)]
     def __init__(self, x, y):
         self.x, self.y   = x + random.uniform(-5,5), y + random.uniform(-5,5)
-        self.vx, self.vy = random.uniform(-300,300),  random.uniform(-300,300)
+        self.vx, self.vy = random.uniform(-300,300), random.uniform(-300,300)
         self.size = random.randint(5, 14)
         self.life = self.max_life = random.uniform(0.6, 1.0)
         self.color = random.choice(self.COLORS)
@@ -38,16 +41,16 @@ class Particle:
 class GameplayScene:
     def __init__(self, world_speed=SPEED_MEDIUM, hitbox_scale=1.0,
                  zoom=1.0, phase=1, manager=None):
-        self._manager     = manager
-        self._phase       = phase
-        self._speed       = world_speed
-        self._hscale      = hitbox_scale
-        self._zoom        = zoom
+        self._manager = manager
+        self._phase   = phase
+        self._speed   = world_speed
+        self._hscale  = hitbox_scale
+        self._zoom    = zoom
 
         self.player = Player()
         self._apply_hscale()
 
-        music_path, self._defs, self._duration = loader.load(world_speed)
+        music_path, self._defs, self._duration = loader.load(world_speed, phase)
         self._idx = 0
         self._obs = []
 
@@ -89,6 +92,10 @@ class GameplayScene:
             if e.type == pygame.KEYDOWN:
                 if e.key == pygame.K_ESCAPE: self._paused = not self._paused
                 if e.key == pygame.K_F3:     self._debug  = not self._debug
+                # cubo: pulo no press (não hold)
+                if e.key == pygame.K_SPACE and self.player.mode == "cube":
+                    if self.player.jump():
+                        audio.play_sfx(SFX)
 
     # ── update ────────────────────────────────────────────────────────
     def update(self, dt):
@@ -105,21 +112,27 @@ class GameplayScene:
 
         t = audio.get_time()
         if t >= self._duration:
-            self._win(t); return
+            self._win(); return
 
         self._camera_x = t * self._speed
 
-        if pygame.key.get_pressed()[pygame.K_SPACE]:
-            if self.player.jump(): audio.play_sfx(SFX)
+        # nave: thrust ao segurar espaço
+        space_held = pygame.key.get_pressed()[pygame.K_SPACE]
 
-        self.player.update(dt)
+        self.player.update(dt, space_held=(self.player.mode == "ship" and space_held))
         self._sync_hscale()
+
+        # colisão com teto (modo nave)
+        if self.player.mode == "ship" and self.player.rect.top <= CEILING_Y:
+            self._die(); return
 
         # spawn
         while (self._idx < len(self._defs) and
                t >= (self._defs[self._idx].spawn_x - SCREEN_WIDTH) / self._speed):
             d = self._defs[self._idx]; self._idx += 1
-            self._obs.append(d.make(d.spawn_x - self._camera_x))
+            obj = d.make(d.spawn_x - self._camera_x)
+            if obj is not None:
+                self._obs.append(obj)
 
         # reposicionar
         for o in self._obs:
@@ -135,13 +148,20 @@ class GameplayScene:
         pr = self.player.collision_rect
         for o in self._obs:
             if not pr.colliderect(o.collision_rect): continue
-            if isinstance(o, Platform):
+
+            if isinstance(o, Portal):
+                if not o.triggered:
+                    o.triggered = True
+                    self.player.set_mode(o.target_mode)
+
+            elif isinstance(o, Platform):
                 if self.player.velocity_y >= 0 and pr.bottom <= o.collision_rect.top + 15:
                     self.player.rect.bottom = o.collision_rect.top
                     self._sync_hscale()
                     self.player.velocity_y = 0.0
                     self.player.on_ground  = True
-            elif isinstance(o, Spike):
+
+            elif isinstance(o, (Spike, CeilingSpike)):
                 self._die(); return
 
     def _die(self):
@@ -163,7 +183,7 @@ class GameplayScene:
             self._speed, self._hscale, self._zoom,
             self._attempts, pct, self._snapshot))
 
-    def _win(self, t):
+    def _win(self):
         snap = self._surf.copy()
         audio.stop()
         from victory import VictoryScene
@@ -174,6 +194,12 @@ class GameplayScene:
         s = self._surf
         s.fill(COLORS["background"])
         self._grid(s)
+
+        # teto (visível no modo nave)
+        if self.player.mode == "ship":
+            pygame.draw.rect(s, CEILING_COLOR, (0, 0, SCREEN_WIDTH, CEILING_Y))
+            pygame.draw.line(s, (120, 100, 160), (0, CEILING_Y), (SCREEN_WIDTH, CEILING_Y), 3)
+
         pygame.draw.line(s, COLORS["ground"], (0, GROUND_Y), (SCREEN_WIDTH, GROUND_Y), 4)
 
         for o in self._obs: o.draw(s)

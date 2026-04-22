@@ -99,8 +99,8 @@ class MenuScene:
                 mp = pygame.mouse.get_pos()
                 for i, btn in enumerate(self._btns):
                     if btn.clicked(mp, True):
-                        if i+1 in (2, 3):
-                            self._msg = f"Fase {i+1} — Em breve!"; self._msg_t = 2.5
+                        if i+1 == 3:
+                            self._msg = "Fase 3 — Em breve!"; self._msg_t = 2.5
                         else:
                             from difficulty import DifficultyScene
                             self._manager.go(DifficultyScene(self._manager, self._clock, i+1))
