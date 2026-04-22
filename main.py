@@ -48,8 +48,6 @@ def main():
         # Delega eventos e atualização para a cena ativa.
         manager.handle_events(events)
         manager.update(dt)
-
-        # Delega o desenho; draw() deve cobrir a tela inteira antes do flip.
         manager.draw(screen)
 
         # Envia o frame renderizado para o monitor (double buffering).

@@ -4,108 +4,126 @@
 #   - O Player (cubo com pulo único e rotação).
 #   - A grade de fundo que rola para criar ilusão de movimento.
 #   - O chão sólido.
+#   - O spawner de obstáculos sincronizado com o tempo da fase.
+#   - Detecção de colisão player ↔ obstáculos.
 #   - Leitura de input (Espaço → pular, ESC → sair).
 
 import pygame
 from src.scenes.scene import Scene
 from src.entities.player import Player
+from src.entities.obstacles import Platform
+from src.systems.level_loader import load_level
 from config import (
     SCREEN_WIDTH, SCREEN_HEIGHT,
     GROUND_Y, COLORS, SPEED_MEDIUM,
 )
 
-# Espaçamento entre as linhas verticais da grade de fundo (pixels).
 GRID_SPACING = 100
+LEVEL_PATH   = "levels/level1.json"
 
 
 class GameplayScene(Scene):
     def __init__(self):
         self.player = Player()
 
-        # Velocidade com que o mundo se move para a esquerda (pixels/segundo).
-        # Representamos a corrida do personagem movendo o cenário — o player
-        # fica sempre na mesma posição horizontal na tela.
+        # Velocidade do mundo (pixels/segundo).
         self.world_speed: float = SPEED_MEDIUM
 
-        # camera_x acumula quantos pixels o mundo já "rolou" desde o início.
-        # Usamos ele para calcular onde cada linha da grade deve ser desenhada,
-        # criando o efeito de rolagem contínua.
+        # Pixels rolados desde o início — equivalente ao "tempo de jogo * world_speed".
         self._camera_x: float = 0.0
 
-    # ------------------------------------------------------------------
-    # HANDLE EVENTS
+        # Carrega a fase: devolve (music_path, lista de ObstacleDef ordenada por spawn_x).
+        _music, self._pending = load_level(LEVEL_PATH, self.world_speed)
+
+        # Obstáculos visíveis / próximos da tela.
+        self.active_obstacles = []
+
     # ------------------------------------------------------------------
     def handle_events(self, events):
         for event in events:
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_SPACE:
-                    # Espaço aciona o pulo. O método jump() decide se é possível.
-                    self.player.jump()
+                if event.key == pygame.K_ESCAPE:
+                    self._paused = not getattr(self, "_paused", False)
 
-                elif event.key == pygame.K_ESCAPE:
-                    # ESC encerra o jogo. Futuramente voltará ao menu principal.
-                    pygame.event.post(pygame.event.Event(pygame.QUIT))
-
-    # ------------------------------------------------------------------
-    # UPDATE
     # ------------------------------------------------------------------
     def update(self, dt: float):
-        # Avança a "câmera" proporcionalmente à velocidade e ao delta time.
-        # dt em segundos garante que a velocidade seja igual independente do FPS.
-        # Ex: world_speed=600, dt=1/60 → câmera avança 10px por frame.
+        if getattr(self, "_paused", False):
+            return
         self._camera_x += self.world_speed * dt
 
-        # Atualiza a física e a animação do player.
+        # Pulo contínuo: se Espaço estiver pressionado e o player estiver no chão
+        # (ou em cima de plataforma), pula imediatamente — sem esperar KEYDOWN.
+        if pygame.key.get_pressed()[pygame.K_SPACE]:
+            self.player.jump()
+
         self.player.update(dt)
 
+        # --- Spawnar obstáculos ---
+        # spawn_x = time * world_speed + SCREEN_WIDTH
+        # O obstáculo deve entrar pela direita quando camera_x == time * world_speed,
+        # ou seja, quando camera_x + SCREEN_WIDTH == spawn_x.
+        # Condição de spawn: camera_x >= spawn_x - SCREEN_WIDTH
+        while self._pending and self._camera_x >= self._pending[0].spawn_x - SCREEN_WIDTH:
+            defn = self._pending.pop(0)
+            # Posição na tela no momento do spawn.
+            screen_x = defn.spawn_x - self._camera_x
+            obs = defn.instantiate(screen_x)
+            self.active_obstacles.append(obs)
+
+        # --- Mover obstáculos para a esquerda ---
+        for obs in self.active_obstacles:
+            obs.update(self.world_speed, dt)
+
+        # --- Remover os que saíram pela esquerda (economiza memória) ---
+        self.active_obstacles = [
+            obs for obs in self.active_obstacles if obs.rect.right > 0
+        ]
+
+        self._check_collisions()
+
     # ------------------------------------------------------------------
-    # DRAW
+    def _check_collisions(self):
+        pr = self.player.rect
+
+        for obs in self.active_obstacles:
+            if not pr.colliderect(obs.collision_rect):
+                continue
+
+            if isinstance(obs, Platform):
+                # Pousa no topo: player descendo e base do player perto do topo da plataforma.
+                if self.player.velocity_y >= 0 and pr.bottom <= obs.collision_rect.top + 15:
+                    pr.bottom = obs.collision_rect.top
+                    self.player.velocity_y = 0.0
+                    self.player.on_ground = True
+            else:
+                pass  # TODO: game over
+
     # ------------------------------------------------------------------
     def draw(self, screen: pygame.Surface):
-        # 1. Fundo sólido.
         screen.fill(COLORS["background"])
-
-        # 2. Grade de fundo rolante — cria ilusão de profundidade e movimento.
         self._draw_grid(screen)
 
-        # 3. Linha do chão.
         pygame.draw.line(
-            screen,
-            COLORS["ground"],
-            (0, GROUND_Y),
-            (SCREEN_WIDTH, GROUND_Y),
+            screen, COLORS["ground"],
+            (0, GROUND_Y), (SCREEN_WIDTH, GROUND_Y),
             width=4,
         )
 
-        # 4. Player por cima de tudo.
+        for obs in self.active_obstacles:
+            obs.draw(screen)
+
         self.player.draw(screen)
 
     # ------------------------------------------------------------------
-    # HELPER — grade rolante
-    # ------------------------------------------------------------------
     def _draw_grid(self, screen: pygame.Surface):
-        # camera_x % GRID_SPACING dá o offset atual dentro de um "bloco" da grade.
-        # Ao subtrair esse offset de cada linha, elas parecem deslizar para a
-        # esquerda de forma contínua e cíclica, sem saltos.
         offset = self._camera_x % GRID_SPACING
 
         x = -offset
         while x < SCREEN_WIDTH:
-            pygame.draw.line(
-                screen,
-                COLORS["grid"],
-                (int(x), 0),
-                (int(x), SCREEN_HEIGHT),
-            )
+            pygame.draw.line(screen, COLORS["grid"], (int(x), 0), (int(x), SCREEN_HEIGHT))
             x += GRID_SPACING
 
-        # Linhas horizontais (estáticas) completam a grade.
         y = 0
         while y < GROUND_Y:
-            pygame.draw.line(
-                screen,
-                COLORS["grid"],
-                (0, y),
-                (SCREEN_WIDTH, y),
-            )
+            pygame.draw.line(screen, COLORS["grid"], (0, y), (SCREEN_WIDTH, y))
             y += GRID_SPACING
