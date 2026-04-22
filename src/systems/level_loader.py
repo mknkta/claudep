@@ -27,7 +27,7 @@ class ObstacleDef:
 
     def instantiate(self, screen_x: float) -> Obstacle:
         if self.type == "spike":
-            return Spike(x=screen_x)
+            return Spike(x=screen_x, size=self.params.get("size", "medium"))
         if self.type == "platform":
             y     = self.params.get("y", GROUND_Y - 180)
             width = self.params.get("width", 200)
