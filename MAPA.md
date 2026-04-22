@@ -1,183 +1,100 @@
 # MAPA DO PROJETO — onde cada coisa está
 
-## Arquivos e o que cada um controla
+## Estrutura de arquivos (tudo na raiz)
 
 ```
 claudep/
-├── main.py                          ← ponto de entrada; cria a janela, o clock e o loop principal
-├── config.py                        ← constantes globais (tamanho da tela, FPS, cores, gravidade, velocidades)
-├── DESIGN.md                        ← documento de design do jogo (referência criativa)
-├── save.json                        ← salva o contador de tentativas entre sessões
-├── levels/
-│   └── level1.json                  ← posição/tempo de cada espinho e plataforma da Fase 1
-└── src/
-    ├── entities/
-    │   ├── player.py                ← cubo do jogador (tamanho, cor, física de pulo, rotação)
-    │   └── obstacles.py             ← espinhos (3 tamanhos) e plataformas
-    ├── scenes/
-    │   ├── scene.py                 ← classe base abstrata de cena
-    │   ├── scene_manager.py         ← troca de cenas (menu → jogo → game over etc.)
-    │   ├── main_menu_scene.py       ← tela inicial (formas flutuantes, botões de fase)
-    │   ├── difficulty_select_scene.py ← painel Fácil/Médio/Difícil
-    │   ├── gameplay_scene.py        ← cena principal: spawna obstáculos, física, morte, vitória
-    │   ├── game_over_scene.py       ← tela de game over (painel com tentativas e progresso)
-    │   └── victory_scene.py         ← tela de vitória (flash branco + "LEVEL COMPLETE")
-    └── systems/
-        ├── audio_manager.py         ← carrega/toca música e efeitos sonoros
-        ├── debug_overlay.py         ← overlay F3 (FPS, hitboxes, tempo da música)
-        ├── level_loader.py          ← lê level1.json e converte tempos → posições X
-        └── save_manager.py          ← lê e grava save.json (tentativas)
+├── main.py          ← loop principal do jogo (janela, FPS, troca de cenas)
+├── config.py        ← constantes globais (tamanho da tela, gravidade, cores, velocidades)
+├── player.py        ← cubo do jogador (tamanho, cor, pulo, rotação)
+├── obstacles.py     ← espinhos e plataformas (tamanhos, cores, hitbox)
+├── level1.py        ← posição de cada espinho e plataforma da Fase 1
+├── loader.py        ← lê o level1.py e converte tempos em posições X
+├── audio.py         ← música e efeitos sonoros
+├── saves.py         ← contador de tentativas (salvo em save.json)
+├── debug.py         ← overlay F3 (FPS, hitboxes, tempo)
+├── gameplay.py      ← cena de jogo (física, colisão, morte, vitória)
+├── menu.py          ← tela inicial (formas flutuantes, botões de fase)
+├── difficulty.py    ← painel Fácil / Médio / Difícil
+├── gameover.py      ← tela de game over (partículas, painel, botões)
+├── victory.py       ← tela de vitória (flash branco, animação)
+└── assets/
+    ├── player.jpg   ← imagem do cubo (opcional — usa cor se não existir)
+    ├── spike.jpg    ← imagem do espinho (opcional — usa triângulo se não existir)
+    ├── music/
+    │   └── level1.ogg  ← música da fase 1
+    └── sfx/
+        └── jump.wav    ← som do pulo (opcional — silencioso se não existir)
 ```
 
 ---
 
-## Para mexer em cada elemento visual
+## Para mexer em cada elemento
+
+---
 
 ### Cubo do jogador
-**Arquivo:** `src/entities/player.py`
+**Arquivo:** `player.py`
 
 | O que mudar | Onde |
 |---|---|
-| Tamanho do cubo | `PLAYER_SIZE = 60` (linha 27) |
-| Cor do cubo (fallback sem sprite) | `.fill((100, 80, 220))` (linha 76) |
-| Cor da borda do cubo | `.fill((160, 140, 255))` (linha 80) |
-| Força do pulo | `JUMP_IMPULSE = -15` (linha 29) — mais negativo = pulo maior |
-| Velocidade de rotação no ar | `ROTATION_SPEED = 6` (linha 32) |
-| Sprite externo | coloque uma imagem em `assets/sprites/player.png` |
+| Tamanho do cubo | `SIZE = 60` |
+| Força do pulo | `JUMP_IMPULSE = -15` — mais negativo = pulo maior |
+| Velocidade de rotação no ar | `ROT_SPEED = 6` |
+| Cor do cubo (sem imagem) | `.fill((100, 80, 220))` no método `_load()` |
+| Cor da borda do cubo | `.draw.rect(..., (160, 140, 255), ...)` no método `_load()` |
+| Imagem do cubo | coloque `assets/player.jpg` — o código carrega automaticamente |
 
 ---
 
 ### Espinhos
-**Arquivo:** `src/entities/obstacles.py`
+**Arquivo:** `obstacles.py`
 
 | O que mudar | Onde |
 |---|---|
-| Tamanhos disponíveis (small/medium/large) | dicionário `_SPIKE_SIZES` (linha 20) — `(largura, altura)` |
-| Cor laranja do espinho | `_COLOR = (255, 80, 30)` (linha 40) |
-| Cor da borda do espinho | `_COLOR_EDGE = (255, 180, 80)` (linha 41) |
-| Tamanho da hitbox (quanto menor o inset, maior a hitbox) | `inset_x = int(w * 0.15)` e `inset_y = int(h * 0.20)` (linhas 51–52) |
-| Sprite externo | coloque uma imagem em `assets/sprites/spike.png` |
+| Tamanho small (largura, altura) | `"small": (22, 18)` no dicionário `SIZES` |
+| Tamanho medium | `"medium": (34, 28)` |
+| Tamanho large | `"large": (46, 38)` |
+| Cor laranja do espinho | `COLOR = (255, 80, 30)` na classe `Spike` |
+| Cor da borda | `COLOR_EDGE = (255, 180, 80)` |
+| Tamanho da hitbox | `int(w * 0.15)` e `int(h * 0.20)` — quanto maior o valor, menor a hitbox |
+| Imagem do espinho | coloque `assets/spike.jpg` — o código carrega automaticamente |
 
 ---
 
 ### Plataformas
-**Arquivo:** `src/entities/obstacles.py`
+**Arquivo:** `obstacles.py`
 
 | O que mudar | Onde |
 |---|---|
-| Espessura da plataforma | `PLATFORM_HEIGHT = 20` (linha 16) |
-| Cor verde da plataforma | `_COLOR = (60, 200, 120)` (linha 91) |
-| Cor da borda verde clara | `_COLOR_EDGE = (120, 255, 180)` (linha 92) |
-| Largura padrão (se não definida no JSON) | `width: int = 200` (linha 95) |
+| Espessura da plataforma | `PLATFORM_H = 20` (no topo do arquivo) |
+| Cor verde | `COLOR = (60, 200, 120)` na classe `Platform` |
+| Cor da borda | `COLOR_EDGE = (120, 255, 180)` |
+| Largura padrão (quando não definida no level) | `width: int = 200` no `__init__` da `Platform` |
 
 ---
 
 ### Fundo e grade
-**Arquivo:** `src/scenes/gameplay_scene.py`
+**Arquivo:** `gameplay.py`
 
 | O que mudar | Onde |
 |---|---|
-| Espaçamento das linhas da grade | `GRID_SPACING = 100` (linha 14) |
 | Cor do fundo | `COLORS["background"]` em `config.py` → `(30, 30, 40)` |
 | Cor das linhas da grade | `COLORS["grid"]` em `config.py` → `(50, 50, 60)` |
-| Cor/espessura do chão | `COLORS["ground"]` e `width=4` no `draw()` |
-| Altura do chão (onde o cubo pousa) | `GROUND_Y = 600` em `config.py` |
+| Espaçamento das linhas | `GRID = 100` no topo de `gameplay.py` |
+| Cor e espessura do chão | `COLORS["ground"]` em `config.py` e `width=4` no método `draw()` |
+| Altura do chão | `GROUND_Y = 600` em `config.py` |
 
 ---
 
 ### Barra de progresso (topo da tela)
-**Arquivo:** `src/scenes/gameplay_scene.py` → método `_draw_progress_bar()`
+**Arquivo:** `gameplay.py`
 
 | O que mudar | Onde |
 |---|---|
-| Altura da barra | `_BAR_H = 8` (linha 18) |
-| Cor da barra preenchida | `_BAR_COL = (140, 80, 220)` (linha 19) |
-| Cor do fundo da barra | `_BAR_BG = (40, 30, 60)` (linha 20) |
-
----
-
-### Partículas de morte
-**Arquivo:** `src/scenes/gameplay_scene.py` → classe `_Particle`
-
-| O que mudar | Onde |
-|---|---|
-| Quantidade de partículas | `[_Particle(cx, cy) for _ in range(20)]` em `_trigger_death()` |
-| Velocidade aleatória | `random.uniform(-300, 300)` para `vx` e `vy` |
-| Tamanho das partículas | `random.randint(5, 14)` |
-| Tempo de vida | `random.uniform(0.6, 1.0)` em segundos |
-| Gravidade das partículas | `self.vy += 600 * dt` |
-| Cores das partículas | lista `random.choice([...])` no `__init__` |
-
----
-
-### Tela inicial (menu principal)
-**Arquivo:** `src/scenes/main_menu_scene.py`
-
-| O que mudar | Onde |
-|---|---|
-| Cor do fundo do menu | `BG_COLOR = (20, 18, 32)` |
-| Cor do título | `TITLE_COLOR = (220, 200, 255)` |
-| Texto do título | `"GEOMETRY DASH"` no `draw()` |
-| Tamanho da fonte do título | `pygame.font.SysFont("consolas", 64, bold=True)` |
-| Formas geométricas flutuantes | classe `_FloatingShape` — velocidade (`vx`, `vy`), tamanho, opacidade (`alpha=40`) |
-| Cor neon de cada botão de fase | `PHASE_COLORS = {1: ciano, 2: magenta, 3: verde}` |
-| Tamanho dos botões | `bw, bh = 260, 90` |
-
----
-
-### Seleção de dificuldade
-**Arquivo:** `src/scenes/difficulty_select_scene.py`
-
-| O que mudar | Onde |
-|---|---|
-| Velocidades | `"speed": 400 / 600 / 900` no dicionário `DIFFICULTIES` |
-| Escala da hitbox no Fácil | `"hitbox": 0.7` |
-| Zoom no Difícil | `"zoom": 1.1` |
-| Cores dos botões | `"color"` em cada entrada de `DIFFICULTIES` |
-
----
-
-### Tela de game over
-**Arquivo:** `src/scenes/game_over_scene.py`
-
-| O que mudar | Onde |
-|---|---|
-| Cor do painel | `(20, 16, 35)` e borda `(120, 80, 180)` |
-| Cor da barra de progresso no painel | `(140, 80, 220)` |
-| Botão "Reiniciar" | cor `(80, 200, 120)` |
-| Botão "Menu Principal" | cor `(100, 120, 220)` |
-
----
-
-### Tela de vitória
-**Arquivo:** `src/scenes/victory_scene.py`
-
-| O que mudar | Onde |
-|---|---|
-| Duração do flash branco | `FLASH_DURATION = 0.3` segundos |
-| Duração da animação do texto | `ANIM_DURATION = 0.8` segundos |
-| Cor do texto "LEVEL COMPLETE" | `(255, 230, 80)` |
-| Escala máxima do texto | `1.2` (cresce até 1.2× e volta para 1.0×) |
-
----
-
-### Posicionamento dos obstáculos na fase
-**Arquivo:** `levels/level1.json`
-
-Cada linha é um obstáculo:
-```json
-{"time": 2.0, "type": "spike", "size": "medium"}
-{"time": 5.5, "type": "platform", "y": 520, "width": 160}
-```
-
-| Campo | O que faz |
-|---|---|
-| `"time"` | segundo da música em que o obstáculo entra na tela |
-| `"type"` | `"spike"` ou `"platform"` |
-| `"size"` | tamanho do espinho: `"small"`, `"medium"` ou `"large"` |
-| `"y"` | altura da plataforma (só para platforms — menor valor = mais alto na tela) |
-| `"width"` | largura da plataforma em pixels |
-| `"duration"` | duração total da fase em segundos (campo no topo do JSON) |
+| Altura da barra | `BAR_H = 8` |
+| Cor da barra preenchida | `BAR_C = (140, 80, 220)` |
+| Cor do fundo da barra | `BAR_B = (40, 30, 60)` |
 
 ---
 
@@ -186,19 +103,115 @@ Cada linha é um obstáculo:
 
 | O que mudar | Onde |
 |---|---|
-| Gravidade | `GRAVITY = 0.8` pixels/frame² |
+| Gravidade | `GRAVITY = 0.8` pixels/frame² — maior = cai mais rápido |
 | Altura do chão | `GROUND_Y = 600` |
 | FPS | `FPS = 60` |
 | Tamanho da janela | `SCREEN_WIDTH = 1280`, `SCREEN_HEIGHT = 720` |
+| Cores do fundo, grade e chão | dicionário `COLORS` |
+| Velocidades das dificuldades | `SPEED_EASY = 400`, `SPEED_MEDIUM = 600`, `SPEED_HARD = 900` |
+
+---
+
+### Partículas de morte
+**Arquivo:** `gameplay.py` → classe `Particle`
+
+| O que mudar | Onde |
+|---|---|
+| Quantidade de partículas | `range(20)` em `_die()` |
+| Velocidade aleatória | `random.uniform(-300, 300)` para `vx` e `vy` |
+| Tamanho | `random.randint(5, 14)` |
+| Tempo de vida | `random.uniform(0.6, 1.0)` segundos |
+| Gravidade das partículas | `self.vy += 600 * dt` |
+| Cores | lista `COLORS` dentro da classe `Particle` |
+| Tempo de congelamento antes do game over | `FREEZE_TIME = 0.5` segundos |
+
+---
+
+### Mapa (posição dos obstáculos)
+**Arquivo:** `level1.py`
+
+Cada linha é um obstáculo. Exemplos:
+```python
+{"time": 2.0, "type": "spike", "size": "medium"}
+{"time": 5.5, "type": "platform", "y": 520, "width": 160}
+```
+
+| Campo | O que faz |
+|---|---|
+| `"time"` | segundo da música em que o obstáculo entra pela direita |
+| `"type"` | `"spike"` ou `"platform"` |
+| `"size"` | tamanho do espinho: `"small"`, `"medium"` ou `"large"` |
+| `"y"` | altura da plataforma — menor valor = mais alto na tela |
+| `"width"` | largura da plataforma em pixels |
+| `DURATION` | duração total da fase em segundos (variável no topo) |
+| `MUSIC` | caminho do arquivo de música |
+
+**Regra importante:** máximo 3 espinhos juntos (espaçados 0.12s), gap mínimo de 0.7s entre grupos. Isso garante que tudo é possível de pular no Fácil.
+
+---
+
+### Tela inicial (menu)
+**Arquivo:** `menu.py`
+
+| O que mudar | Onde |
+|---|---|
+| Cor do fundo | `BG = (20, 18, 32)` |
+| Cor do título | `TITLE = (220, 200, 255)` |
+| Texto do título | `"GEOMETRY DASH"` no método `draw()` |
+| Quantidade de formas flutuantes | `range(8)` no `__init__` |
+| Cores neon dos botões por fase | `PHASE_COLORS = {1: ciano, 2: magenta, 3: verde}` |
+| Tamanho dos botões | `bw, bh = 260, 90` |
+
+---
+
+### Seleção de dificuldade
+**Arquivo:** `difficulty.py`
+
+| O que mudar | Onde |
+|---|---|
+| Velocidade de cada dificuldade | `"speed": 400 / 600 / 900` no dicionário `DIFFS` |
+| Hitbox no Fácil | `"hscale": 0.7` — 0.7 = 70% do tamanho visual |
+| Zoom no Difícil | `"zoom": 1.1` — 1.1 = 10% de zoom in |
+| Cores dos botões | `"color"` em cada entrada de `DIFFS` |
+
+---
+
+### Tela de game over
+**Arquivo:** `gameover.py`
+
+| O que mudar | Onde |
+|---|---|
+| Cor do painel | `(20, 16, 35)` fundo e `(120, 80, 180)` borda |
+| Botão "Reiniciar" | cor `(80, 200, 120)` |
+| Botão "Menu Principal" | cor `(100, 120, 220)` |
+| Escurecimento do fundo | `(0, 0, 0, 170)` — último número é a opacidade (0–255) |
+
+---
+
+### Tela de vitória
+**Arquivo:** `victory.py`
+
+| O que mudar | Onde |
+|---|---|
+| Duração do flash branco | `FLASH = 0.3` segundos |
+| Duração da animação do texto | `ANIM = 0.8` segundos |
+| Cor do "LEVEL COMPLETE" | `(255, 230, 80)` |
+| Escala máxima do texto | `1.2` no cálculo de `scale` |
 
 ---
 
 ### Música e sons
-**Arquivo:** `src/systems/audio_manager.py`
+**Arquivo:** `audio.py`
 
-| Arquivo de áudio | Caminho |
+| O que mudar | Onde |
 |---|---|
-| Música da Fase 1 | `assets/music/level1.ogg` (definido em `levels/level1.json`) |
-| Som de pulo | `assets/sfx/jump.wav` (silencioso se não existir) |
+| Volume da música | `set_volume(0.7)` em `play_music()` — 0.0 a 1.0 |
+| Arquivo de música | definido em `level1.py` → `MUSIC = "assets/music/level1.ogg"` |
+| Som de pulo | `SFX = "assets/sfx/jump.wav"` em `gameplay.py` |
 
-Volume da música: `set_volume(0.7)` em `play_music()` — valor entre 0.0 e 1.0.
+---
+
+### Contador de tentativas
+**Arquivo:** `saves.py`
+
+Salvo automaticamente em `save.json` na raiz. Para zerar as tentativas, delete o arquivo `save.json`.

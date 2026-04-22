@@ -3,7 +3,9 @@
     "allow": [
       "Bash(python -c ':*)",
       "Bash(python main.py)",
-      "Bash(echo \"EXIT CODE: $?\")"
+      "Bash(echo \"EXIT CODE: $?\")",
+      "Bash(cp C:/Users/mateu/claudep/levels/level1.py C:/Users/mateu/claudep/level1.py)",
+      "Bash(echo \"EXIT:$?\")"
     ]
   }
 }
