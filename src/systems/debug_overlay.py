@@ -48,7 +48,8 @@ def draw(
         pygame.draw.rect(screen, _RED,    obs.collision_rect, width=1)
 
     # Collision rect do player em verde.
-    pygame.draw.rect(screen, _GREEN, player.rect, width=2)
+    col_r = getattr(player, "collision_rect", player.rect)
+    pygame.draw.rect(screen, _GREEN, col_r, width=2)
 
     # ------------------------------------------------------------------
     # Painel de texto (canto superior esquerdo)

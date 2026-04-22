@@ -1,5 +1,6 @@
 {
   "music": "assets/music/level1.ogg",
+  "duration": 92.0,
   "obstacles": [
     {"time": 2.0,  "type": "spike"},
     {"time": 3.0,  "type": "spike"},
