@@ -61,8 +61,8 @@ OBSTACLES = [
 
     {"time": 19.0,  "type": "spike", "size": "medium"},
     {"time": 19.12, "type": "spike", "size": "large"},
-    {"time": 19.24, "type": "spike", "size": "medium"},
-
+    {"time": 19.24, "type": "spike", "size": "small"},
+    
     # escadinha
     {"time": 20.5,  "type": "platform", "y": 520, "width": 130},
     {"time": 20.5,  "type": "spike", "size": "large"},

@@ -1,12 +1,35 @@
+"""
+gameover.py — Tela de game over (GameOverScene).
+
+Exibida quando o player morre. Mostra o número de tentativas,
+percentual do nível completado e botões para reiniciar ou ir ao menu.
+"""
+
 import pygame
+import audio
 from config import SCREEN_WIDTH, SCREEN_HEIGHT
 
 BW, BH = 200, 55
 
 
 class GameOverScene:
+    """Tela de fim de jogo após a morte do player."""
     def __init__(self, manager, clock, phase, speed, hscale, zoom,
                  attempts, progress_pct, snapshot):
+        """
+        Inicializa a tela de game over.
+
+        Args:
+            manager: Gerenciador de cenas.
+            clock: Clock do pygame.
+            phase: Número da fase atual.
+            speed: Velocidade do mundo usada na partida.
+            hscale: Escala de hitbox usada na partida.
+            zoom: Zoom de câmera usado na partida.
+            attempts: Total de tentativas acumuladas.
+            progress_pct: Percentual da fase completado (0–100).
+            snapshot: Surface com o último frame antes da morte.
+        """
         self._manager  = manager
         self._clock    = clock
         self._phase    = phase
@@ -32,27 +55,41 @@ class GameOverScene:
         self._ov.fill((0,0,0,170))
 
     def handle_events(self, events):
+        """Processa cliques nos botões de reiniciar e menu principal."""
         for e in events:
             if e.type == pygame.MOUSEBUTTONDOWN and e.button == 1:
                 mp = pygame.mouse.get_pos()
-                if self._br.collidepoint(mp): self._restart()
-                elif self._bm.collidepoint(mp): self._menu()
+                if self._br.collidepoint(mp):
+                    audio.play_click()
+                    self._restart()
+                elif self._bm.collidepoint(mp):
+                    audio.play_click()
+                    self._menu()
 
     def _restart(self):
+        """Reinicia a fase com os mesmos parâmetros."""
         from gameplay import GameplayScene
         s = GameplayScene(self._speed, self._hscale, self._zoom, self._phase, self._manager)
         s.set_clock(self._clock)
         self._manager.go(s)
 
     def _menu(self):
+        """Volta ao menu principal."""
+        import saves
+        saves.reset_attempts()
         from menu import MenuScene
         self._manager.go(MenuScene(self._manager, self._clock))
 
     def update(self, dt):
-        mp = pygame.mouse.get_pos()
-        self._hov = "r" if self._br.collidepoint(mp) else "m" if self._bm.collidepoint(mp) else None
+        """Atualiza hover dos botões e toca som ao entrar."""
+        mp      = pygame.mouse.get_pos()
+        new_hov = "r" if self._br.collidepoint(mp) else "m" if self._bm.collidepoint(mp) else None
+        if new_hov != self._hov and new_hov is not None:
+            audio.play_hover()
+        self._hov = new_hov
 
     def draw(self, screen):
+        """Renderiza o painel de game over com estatísticas e botões."""
         if self._snap: screen.blit(self._snap, (0,0))
         screen.blit(self._ov, (0,0))
 
@@ -74,6 +111,7 @@ class GameOverScene:
         self._btn(screen, self._bm, "Menu Principal", (100,120,220), self._hov=="m")
 
     def _btn(self, screen, rect, label, color, hov):
+        """Desenha um botão individual com efeito de escala no hover."""
         w, h = int(rect.w*(1.05 if hov else 1)), int(rect.h*(1.05 if hov else 1))
         r = pygame.Rect(rect.centerx-w//2, rect.centery-h//2, w, h)
         pygame.draw.rect(screen, (30,25,45), r, border_radius=8)

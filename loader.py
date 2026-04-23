@@ -1,15 +1,41 @@
+"""
+loader.py — Carregamento de níveis e construção de obstáculos.
+
+Lê o módulo de fase (level1.py, level2.py, level3.py), converte os
+dados de tempo/tipo em objetos Def e retorna a lista ordenada por spawn_x.
+"""
+
 import importlib
 from config import SCREEN_WIDTH, GROUND_Y, CEILING_Y
-from obstacles import Spike, CeilingSpike, Platform, Portal, Wall, SpikeBall, PulseLaser
+from obstacles import Spike, CeilingSpike, Platform, Portal, GravityPortal, GravityFlipPortal, Wall, SpikeBall, PulseLaser
 
 
 class Def:
+    """Definição de um obstáculo a ser instanciado em determinada posição."""
+
     def __init__(self, spawn_x, obs_type, params):
+        """
+        Inicializa a definição do obstáculo.
+
+        Args:
+            spawn_x: Posição horizontal absoluta de spawn (câmera + tela).
+            obs_type: String que identifica o tipo do obstáculo.
+            params: Dicionário com parâmetros extras passados ao construtor.
+        """
         self.spawn_x  = spawn_x
         self.obs_type = obs_type
         self.params   = params
 
     def make(self, screen_x):
+        """
+        Instancia o obstáculo na posição de tela fornecida.
+
+        Args:
+            screen_x: Posição horizontal na tela (relativa à câmera).
+
+        Returns:
+            Instância do obstáculo ou None se o tipo for desconhecido.
+        """
         t = self.obs_type
         o = None
         if t == "spike":
@@ -22,6 +48,10 @@ class Def:
                          width=self.params.get("width", 200))
         elif t == "portal":
             o = Portal(x=screen_x, target_mode=self.params.get("target_mode", "ship"))
+        elif t == "gravity_portal":
+            o = GravityPortal(x=screen_x)
+        elif t == "gravity_flip_portal":
+            o = GravityFlipPortal(x=screen_x)
         elif t == "wall":
             mid_y = (CEILING_Y + GROUND_Y) // 2
             o = Wall(x=screen_x,

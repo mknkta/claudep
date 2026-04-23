@@ -1,4 +1,12 @@
+"""
+victory.py — Tela de vitória (VictoryScene).
+
+Exibida quando o jogador completa a fase. Mostra animação do título,
+número de tentativas e botão para salvar pontuação e ir ao ranking.
+"""
+
 import pygame
+import audio
 from config import SCREEN_WIDTH, SCREEN_HEIGHT
 
 FLASH = 0.3
@@ -6,10 +14,22 @@ ANIM  = 0.8
 
 
 class VictoryScene:
-    def __init__(self, manager, clock, attempts, snapshot):
+    """Tela de celebração exibida ao concluir uma fase com sucesso."""
+    def __init__(self, manager, clock, attempts, phase, snapshot):
+        """
+        Inicializa a tela de vitória.
+
+        Args:
+            manager: Gerenciador de cenas.
+            clock: Clock do pygame.
+            attempts: Total de tentativas usadas na fase.
+            phase: Número da fase concluída.
+            snapshot: Surface com o último frame do gameplay.
+        """
         self._manager  = manager
         self._clock    = clock
         self._attempts = attempts
+        self._phase    = phase
         self._snap     = snapshot
         self._t        = 0.0
         self._hov      = False
@@ -23,17 +43,26 @@ class VictoryScene:
         self._btn = pygame.Rect((SCREEN_WIDTH-pw)//2, SCREEN_HEIGHT//2+140, pw, ph)
 
     def handle_events(self, events):
+        """Processa clique no botão para voltar ao menu principal."""
         for e in events:
             if e.type == pygame.MOUSEBUTTONDOWN and e.button == 1:
                 if self._t > FLASH and self._btn.collidepoint(pygame.mouse.get_pos()):
+                    audio.play_click()
+                    import saves
+                    saves.reset_attempts()
                     from menu import MenuScene
                     self._manager.go(MenuScene(self._manager, self._clock))
 
     def update(self, dt):
+        """Avança o timer de animação e atualiza estado de hover."""
+        was_hov   = self._hov
         self._t  += dt
         self._hov = self._btn.collidepoint(pygame.mouse.get_pos())
+        if self._hov and not was_hov:
+            audio.play_hover()
 
     def draw(self, screen):
+        """Renderiza a animação de vitória, estatísticas e botão."""
         if self._snap: screen.blit(self._snap, (0,0))
 
         if self._t < FLASH:

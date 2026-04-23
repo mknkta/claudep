@@ -1,5 +1,14 @@
-import math, random
+"""
+menu.py — Tela inicial do jogo (MenuScene).
+
+Exibe o título, botões de seleção de fase e botão de ranking.
+Botões possuem efeitos visuais (hover/scale) e sonoros (beep).
+"""
+
+import math
+import random
 import pygame
+import audio
 from config import SCREEN_WIDTH, SCREEN_HEIGHT
 
 PHASE_COLORS = {1: (0,255,255), 2: (255,0,255), 3: (0,255,80)}
@@ -8,8 +17,12 @@ TITLE = (220, 200, 255)
 
 
 class _Shape:
+    """Forma geométrica decorativa animada no fundo do menu."""
+
     TYPES = ("rect", "circle", "triangle")
+
     def __init__(self, initial=True):
+        """Inicializa a forma com posição, velocidade e tipo aleatórios."""
         self.x  = random.uniform(0, SCREEN_WIDTH)
         self.y  = random.uniform(0, SCREEN_HEIGHT) if initial else random.choice([-60, SCREEN_HEIGHT+60])
         self.vx = random.choice([-1,1]) * random.uniform(15, 35)
@@ -22,6 +35,7 @@ class _Shape:
         self.color = (*r, 40)
 
     def update(self, dt):
+        """Atualiza posição e ângulo; reinicia quando sai da tela."""
         self.x += self.vx * dt
         self.y += self.vy * dt
         self.angle = (self.angle + self.rot * dt) % 360
@@ -29,11 +43,13 @@ class _Shape:
             self.__init__(initial=False)
 
     def draw(self, screen):
+        """Desenha a forma semi-transparente na tela."""
         s = self.sz
         buf = pygame.Surface((s*2+4, s*2+4), pygame.SRCALPHA)
         cx, cy = s+2, s+2
         if self.shape == "rect":
-            rs = pygame.Surface((s, s), pygame.SRCALPHA); rs.fill(self.color)
+            rs = pygame.Surface((s, s), pygame.SRCALPHA)
+            rs.fill(self.color)
             rot = pygame.transform.rotate(rs, self.angle)
             buf.blit(rot, rot.get_rect(center=(cx, cy)))
         elif self.shape == "circle":
@@ -48,22 +64,43 @@ class _Shape:
 
 
 class _Btn:
+    """Botão interativo com efeito de escala no hover e som ao clicar/passar."""
+
     def __init__(self, rect, label, color):
+        """
+        Inicializa o botão.
+
+        Args:
+            rect: pygame.Rect com a posição e tamanho do botão.
+            label: Texto exibido no botão.
+            color: Cor de destaque do botão.
+        """
         self.rect  = rect
         self.label = label
         self.color = color
         self._hov  = False
         self._font = None
 
-    def _f(self, sz): return pygame.font.SysFont("consolas", sz, bold=True)
+    def _f(self, sz):
+        """Retorna fonte Consolas em tamanho sz."""
+        return pygame.font.SysFont("consolas", sz, bold=True)
 
-    def update(self, mp): self._hov = self.rect.collidepoint(mp)
+    def update(self, mp):
+        """Atualiza estado de hover e toca som ao entrar no botão."""
+        was_hov = self._hov
+        self._hov = self.rect.collidepoint(mp)
+        if self._hov and not was_hov:
+            audio.play_hover()
 
-    def clicked(self, mp, pressed): return self.rect.collidepoint(mp) and pressed
+    def clicked(self, mp, pressed):
+        """Retorna True se o mouse está sobre o botão e pressionado."""
+        return self.rect.collidepoint(mp) and pressed
 
     def draw(self, screen):
+        """Desenha o botão com escala maior no hover."""
         sc = 1.05 if self._hov else 1.0
-        w  = int(self.rect.w * sc); h = int(self.rect.h * sc)
+        w  = int(self.rect.w * sc)
+        h  = int(self.rect.h * sc)
         cx, cy = self.rect.center
         r = pygame.Rect(cx-w//2, cy-h//2, w, h)
         pygame.draw.rect(screen, (30,25,45), r, border_radius=10)
@@ -75,17 +112,24 @@ class _Btn:
 
 
 class MenuScene:
+    """Tela inicial com seleção de fase e acesso ao ranking."""
+
     def __init__(self, manager, clock):
+        """
+        Inicializa o menu principal.
+
+        Args:
+            manager: Gerenciador de cenas para transições.
+            clock: Clock do pygame.
+        """
         self._manager = manager
         self._clock   = clock
         self._shapes  = [_Shape() for _ in range(8)]
-        self._msg     = ""
-        self._msg_t   = 0.0
-
-        bw, bh = 260, 90; gap = 40
+        bw, bh = 260, 90
+        gap    = 40
         total  = 3*bw + 2*gap
         sx     = (SCREEN_WIDTH - total) // 2
-        by     = SCREEN_HEIGHT // 2 + 30
+        by     = SCREEN_HEIGHT // 2 + 20
         self._btns = [
             _Btn(pygame.Rect(sx + i*(bw+gap), by, bw, bh), f"Fase {i+1}", PHASE_COLORS[i+1])
             for i in range(3)
@@ -94,35 +138,35 @@ class MenuScene:
         self._sf = pygame.font.SysFont("consolas", 18)
 
     def handle_events(self, events):
+        """Processa cliques: inicia fase selecionada ou abre ranking."""
         for e in events:
             if e.type == pygame.MOUSEBUTTONDOWN and e.button == 1:
                 mp = pygame.mouse.get_pos()
                 for i, btn in enumerate(self._btns):
                     if btn.clicked(mp, True):
-                        if i+1 == 3:
-                            self._msg = "Fase 3 — Em breve!"; self._msg_t = 2.5
-                        else:
-                            from difficulty import DifficultyScene
-                            self._manager.go(DifficultyScene(self._manager, self._clock, i+1))
+                        audio.play_click()
+                        from difficulty import DifficultyScene
+                        self._manager.go(DifficultyScene(self._manager, self._clock, i+1))
 
     def update(self, dt):
+        """Atualiza hover dos botões e animação das formas decorativas."""
         mp = pygame.mouse.get_pos()
-        for b in self._btns: b.update(mp)
-        for s in self._shapes: s.update(dt)
-        if self._msg_t > 0: self._msg_t -= dt
+        for b in self._btns:
+            b.update(mp)
+        for s in self._shapes:
+            s.update(dt)
 
     def draw(self, screen):
+        """Renderiza o fundo, formas, título e botões."""
         screen.fill(BG)
-        for s in self._shapes: s.draw(screen)
+        for s in self._shapes:
+            s.draw(screen)
 
         t = self._tf.render("GEOMETRY DASH", True, TITLE)
-        screen.blit(t, t.get_rect(centerx=SCREEN_WIDTH//2, centery=SCREEN_HEIGHT//2-80))
+        screen.blit(t, t.get_rect(centerx=SCREEN_WIDTH//2, centery=SCREEN_HEIGHT//2-90))
 
         sub = self._sf.render("Escolha uma fase para começar", True, (120,110,150))
-        screen.blit(sub, sub.get_rect(centerx=SCREEN_WIDTH//2, centery=SCREEN_HEIGHT//2-20))
+        screen.blit(sub, sub.get_rect(centerx=SCREEN_WIDTH//2, centery=SCREEN_HEIGHT//2-30))
 
-        for b in self._btns: b.draw(screen)
-
-        if self._msg_t > 0:
-            m = self._sf.render(self._msg, True, (255,200,80))
-            screen.blit(m, m.get_rect(centerx=SCREEN_WIDTH//2, centery=SCREEN_HEIGHT//2+160))
+        for b in self._btns:
+            b.draw(screen)

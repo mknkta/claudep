@@ -1,4 +1,11 @@
+"""
+difficulty.py — Tela de seleção de dificuldade (DifficultyScene).
+
+Oferece três níveis: Fácil (velocidade menor, hitbox reduzida), Médio e Difícil (zoom in).
+"""
+
 import pygame
+import audio
 from config import SCREEN_WIDTH, SCREEN_HEIGHT
 
 DIFFS = [
@@ -9,7 +16,17 @@ DIFFS = [
 
 
 class DifficultyScene:
+    """Tela de seleção de dificuldade para a fase escolhida."""
+
     def __init__(self, manager, clock, phase):
+        """
+        Inicializa a tela de dificuldade.
+
+        Args:
+            manager: Gerenciador de cenas para transições.
+            clock: Clock do pygame.
+            phase: Número da fase (1, 2 ou 3).
+        """
         self._manager = manager
         self._clock   = clock
         self._phase   = phase
@@ -31,13 +48,17 @@ class DifficultyScene:
         self._ov.fill((0,0,0,150))
 
     def handle_events(self, events):
+        """Processa ESC (volta ao menu) e clique para iniciar com dificuldade escolhida."""
         for e in events:
             if e.type == pygame.KEYDOWN and e.key == pygame.K_ESCAPE:
+                import saves
+                saves.reset_attempts()
                 from menu import MenuScene
                 self._manager.go(MenuScene(self._manager, self._clock))
             if e.type == pygame.MOUSEBUTTONDOWN and e.button == 1:
                 for i, r in enumerate(self._btns):
                     if r.collidepoint(pygame.mouse.get_pos()):
+                        audio.play_click()
                         d = DIFFS[i]
                         from gameplay import GameplayScene
                         s = GameplayScene(d["speed"], d["hscale"], d["zoom"],
@@ -46,10 +67,15 @@ class DifficultyScene:
                         self._manager.go(s)
 
     def update(self, dt):
-        mp = pygame.mouse.get_pos()
-        self._hov = next((i for i,r in enumerate(self._btns) if r.collidepoint(mp)), -1)
+        """Atualiza hover dos botões e toca som ao entrar."""
+        mp      = pygame.mouse.get_pos()
+        new_hov = next((i for i,r in enumerate(self._btns) if r.collidepoint(mp)), -1)
+        if new_hov != self._hov and new_hov != -1:
+            audio.play_hover()
+        self._hov = new_hov
 
     def draw(self, screen):
+        """Renderiza o painel de seleção de dificuldade."""
         screen.blit(self._ov, (0,0))
         pygame.draw.rect(screen, (25,20,40),   self._panel, border_radius=14)
         pygame.draw.rect(screen, (80,60,120),  self._panel, width=2, border_radius=14)

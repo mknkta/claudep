@@ -38,7 +38,7 @@ OBSTACLES = [
     {"time":  7.34, "type": "spike", "size": "medium"},
 
     # ── Laser pulsante (intro) ────────────────────────────────────────
-    {"time":  8.0,  "type": "pulse_laser", "y": 420, "freq": 2.5, "phase": 0.0},
+    {"time":  8.0,  "type": "pulse_laser", "y": 470, "freq": 1.2, "phase": 0.0},
 
     {"time":  8.6,  "type": "spike", "size": "large"},
     {"time":  8.72, "type": "spike", "size": "medium"},
@@ -66,7 +66,7 @@ OBSTACLES = [
     {"time": 12.44, "type": "spike", "size": "small"},
 
     # ── Laser + espinhos ─────────────────────────────────────────────
-    {"time": 13.0,  "type": "pulse_laser", "y": 380, "freq": 3.0, "phase": 1.0},
+    {"time": 13.0,  "type": "pulse_laser", "y": 460, "freq": 1.4, "phase": 1.0},
 
     {"time": 13.6,  "type": "spike", "size": "medium"},
     {"time": 13.72, "type": "spike", "size": "large"},
@@ -111,8 +111,8 @@ OBSTACLES = [
     {"time": 20.42, "type": "spike", "size": "medium"},
 
     # ── Laser duplo ──────────────────────────────────────────────────
-    {"time": 21.2,  "type": "pulse_laser", "y": 350, "freq": 2.8, "phase": 0.0},
-    {"time": 21.2,  "type": "pulse_laser", "y": 480, "freq": 2.8, "phase": 3.14},
+    {"time": 21.2,  "type": "pulse_laser", "y": 450, "freq": 1.5, "phase": 0.0},
+    {"time": 21.2,  "type": "pulse_laser", "y": 510, "freq": 1.5, "phase": 3.14},
 
     {"time": 22.0,  "type": "spike", "size": "small"},
     {"time": 22.12, "type": "spike", "size": "medium"},
@@ -140,7 +140,7 @@ OBSTACLES = [
     {"time": 25.84, "type": "spike", "size": "medium"},
 
     # ── Laser rápido ─────────────────────────────────────────────────
-    {"time": 26.5,  "type": "pulse_laser", "y": 400, "freq": 4.0, "phase": 0.5},
+    {"time": 26.5,  "type": "pulse_laser", "y": 465, "freq": 1.6, "phase": 0.5},
 
     {"time": 27.1,  "type": "spike", "size": "large"},
     {"time": 27.22, "type": "spike", "size": "medium"},
@@ -176,8 +176,8 @@ OBSTACLES = [
     {"time": 32.54, "type": "spike", "size": "large"},
 
     # ── Laser + espinhos densos ──────────────────────────────────────
-    {"time": 33.2,  "type": "pulse_laser", "y": 370, "freq": 3.5, "phase": 0.0},
-    {"time": 33.2,  "type": "pulse_laser", "y": 500, "freq": 3.5, "phase": 3.14},
+    {"time": 33.2,  "type": "pulse_laser", "y": 445, "freq": 1.7, "phase": 0.0},
+    {"time": 33.2,  "type": "pulse_laser", "y": 510, "freq": 1.7, "phase": 3.14},
 
     {"time": 34.0,  "type": "spike", "size": "large"},
     {"time": 34.12, "type": "spike", "size": "medium"},
@@ -226,7 +226,7 @@ OBSTACLES = [
     {"time": 41.72, "type": "spike", "size": "medium"},
 
     # ── Laser rápido pós-escadinha ────────────────────────────────────
-    {"time": 42.5,  "type": "pulse_laser", "y": 410, "freq": 4.5, "phase": 1.0},
+    {"time": 42.5,  "type": "pulse_laser", "y": 460, "freq": 1.8, "phase": 1.0},
 
     {"time": 43.1,  "type": "spike", "size": "medium"},
     {"time": 43.22, "type": "spike", "size": "large"},
@@ -275,9 +275,8 @@ OBSTACLES = [
     {"time": 50.82, "type": "spike", "size": "small"},
 
     # ── Lasers triplos ────────────────────────────────────────────────
-    {"time": 51.7,  "type": "pulse_laser", "y": 330, "freq": 3.0, "phase": 0.0},
-    {"time": 51.7,  "type": "pulse_laser", "y": 430, "freq": 3.0, "phase": 2.09},
-    {"time": 51.7,  "type": "pulse_laser", "y": 520, "freq": 3.0, "phase": 4.18},
+    {"time": 51.7,  "type": "pulse_laser", "y": 440, "freq": 1.8, "phase": 0.0},
+    {"time": 51.7,  "type": "pulse_laser", "y": 500, "freq": 1.8, "phase": 2.09},
 
     {"time": 52.5,  "type": "spike", "size": "large"},
     {"time": 52.62, "type": "spike", "size": "medium"},
@@ -329,7 +328,7 @@ OBSTACLES = [
     {"time": 60.7,  "type": "spike", "size": "large"},
     {"time": 60.82, "type": "spike", "size": "medium"},
 
-    {"time": 61.5,  "type": "pulse_laser", "y": 390, "freq": 5.0, "phase": 0.0},
+    {"time": 61.5,  "type": "pulse_laser", "y": 460, "freq": 2.0, "phase": 0.0},
 
     {"time": 62.1,  "type": "spike", "size": "medium"},
     {"time": 62.22, "type": "spike", "size": "large"},
@@ -357,8 +356,8 @@ OBSTACLES = [
     {"time": 66.04, "type": "spike", "size": "large"},
 
     # ── Lasers duplos rápidos ─────────────────────────────────────────
-    {"time": 66.8,  "type": "pulse_laser", "y": 360, "freq": 4.0, "phase": 0.0},
-    {"time": 66.8,  "type": "pulse_laser", "y": 510, "freq": 4.0, "phase": 3.14},
+    {"time": 66.8,  "type": "pulse_laser", "y": 450, "freq": 2.0, "phase": 0.0},
+    {"time": 66.8,  "type": "pulse_laser", "y": 510, "freq": 2.0, "phase": 3.14},
 
     {"time": 67.5,  "type": "spike", "size": "medium"},
     {"time": 67.62, "type": "spike", "size": "large"},
@@ -394,8 +393,8 @@ OBSTACLES = [
     {"time": 72.82, "type": "spike", "size": "medium"},
 
     # ── Laser intenso ─────────────────────────────────────────────────
-    {"time": 73.6,  "type": "pulse_laser", "y": 340, "freq": 5.5, "phase": 0.0},
-    {"time": 73.6,  "type": "pulse_laser", "y": 470, "freq": 5.5, "phase": 1.57},
+    {"time": 73.6,  "type": "pulse_laser", "y": 445, "freq": 2.1, "phase": 0.0},
+    {"time": 73.6,  "type": "pulse_laser", "y": 505, "freq": 2.1, "phase": 1.57},
 
     {"time": 74.3,  "type": "spike", "size": "large"},
     {"time": 74.42, "type": "spike", "size": "medium"},
@@ -427,8 +426,8 @@ OBSTACLES = [
     {"time": 78.84, "type": "spike", "size": "medium"},
 
     # ── Clímax: lasers + espinhos densos ─────────────────────────────
-    {"time": 79.6,  "type": "pulse_laser", "y": 350, "freq": 6.0, "phase": 0.0},
-    {"time": 79.6,  "type": "pulse_laser", "y": 490, "freq": 6.0, "phase": 3.14},
+    {"time": 79.6,  "type": "pulse_laser", "y": 448, "freq": 2.2, "phase": 0.0},
+    {"time": 79.6,  "type": "pulse_laser", "y": 508, "freq": 2.2, "phase": 3.14},
 
     {"time": 80.3,  "type": "spike", "size": "large"},
     {"time": 80.42, "type": "spike", "size": "medium"},
@@ -450,7 +449,7 @@ OBSTACLES = [
     {"time": 83.32, "type": "spike", "size": "large"},
     {"time": 83.44, "type": "spike", "size": "medium"},
 
-    {"time": 83.9,  "type": "pulse_laser", "y": 400, "freq": 7.0, "phase": 0.8},
+    {"time": 83.9,  "type": "pulse_laser", "y": 460, "freq": 2.2, "phase": 0.8},
 
     {"time": 84.5,  "type": "spike", "size": "large"},
     {"time": 84.62, "type": "spike", "size": "medium"},
