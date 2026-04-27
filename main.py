@@ -39,9 +39,9 @@ def main():
     pygame.display.set_caption("Meu Jogo")
     clock  = pygame.time.Clock()
 
-    from menu import MenuScene
+    from name_input import NameInputScene
     manager = Manager(None)
-    manager.go(MenuScene(manager, clock))
+    manager.go(NameInputScene(manager, clock))
 
     while True:
         dt = clock.tick(FPS) / 1000.0

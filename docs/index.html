@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Developer Life — O Jogo</title>
+    <link rel="stylesheet" href="css/reset.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <!-- ========== NAVEGAÇÃO ========== -->
+    <nav>
+        <div class="container nav__inner">
+            <span class="nav__logo">Developer Life</span>
+            <ul class="nav__links">
+                <li><a href="#sobre">Sobre</a></li>
+                <li><a href="#screenshots">Telas</a></li>
+                <li><a href="#video">Vídeo</a></li>
+                <li><a href="#fases">Fases</a></li>
+                <li><a href="#como-jogar">Como Jogar</a></li>
+                <li><a href="#devlog">Log</a></li>
+                <li><a href="#equipe">Equipe</a></li>
+                <li><a href="#download">Download</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- ========== HERO ========== -->
+    <section class="hero" id="inicio">
+        <div class="hero__bg"></div>
+        <div class="hero__content">
+            <span class="hero__badge">Projeto Pygame — 2025</span>
+            <h1 class="hero__title">Developer Life</h1>
+            <p class="hero__subtitle">
+                Um jogo de plataforma com rolagem lateral sincronizado com a música,
+                três fases únicas e mecânicas progressivas. Quanto você aguenta?
+            </p>
+            <div class="hero__cta-group">
+                <a href="#download" class="btn btn--primary">⬇ Baixar o Jogo</a>
+                <a href="#video" class="btn btn--outline">▶ Ver Gameplay</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========== SOBRE ========== -->
+    <section class="about" id="sobre">
+        <div class="container">
+            <h2 class="section-title">Sobre o Jogo</h2>
+            <div class="about__grid">
+                <div class="about__text">
+                    <p>
+                        <strong>Developer Life</strong> é um jogo de plataforma de rolagem lateral
+                        inspirado no Geometry Dash, desenvolvido em Python com a biblioteca Pygame.
+                        O diferencial: cada obstáculo é posicionado em sincronia com os batimentos
+                        da trilha sonora, tornando cada fase uma experiência rítmica única.
+                    </p>
+                    <p>
+                        O jogador controla um cubo que corre automaticamente pelo cenário.
+                        Pule, voe e inverta a gravidade para desviar de espinhos e serras,
+                        avançando pelas três fases com dificuldade crescente.
+                    </p>
+                    <ul class="about__features">
+                        <li class="feature-item">
+                            <span class="feature-item__icon">🎵</span>
+                            Obstáculos sincronizados com a música
+                        </li>
+                        <li class="feature-item">
+                            <span class="feature-item__icon">🚀</span>
+                            3 mecânicas distintas: cubo, nave e gravidade invertida
+                        </li>
+                        <li class="feature-item">
+                            <span class="feature-item__icon">🎮</span>
+                            3 níveis de dificuldade por fase
+                        </li>
+                        <li class="feature-item">
+                            <span class="feature-item__icon">🏆</span>
+                            Ranking e sistema de tentativas
+                        </li>
+                    </ul>
+                </div>
+                <div class="about__visuals">
+                    <!-- Imagem temporária — substituir por print do jogo -->
+                    <img
+                        src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/31/Geometrydash.png/320px-Geometrydash.png"
+                        alt="Referência visual de gameplay de plataforma rítmica"
+                        style="border-radius: 0.75rem; border: 1px solid rgba(160,110,232,0.2);"
+                    >
+                    <p style="font-size:0.75rem; color: var(--color-muted); text-align:center;">
+                        ⚠ Imagem temporária — será substituída por prints do Developer Life.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========== SCREENSHOTS ========== -->
+    <section class="screenshots" id="screenshots">
+        <div class="container">
+            <h2 class="section-title">Telas do Jogo</h2>
+            <div class="screenshots__grid">
+
+                <article class="screenshot-card">
+                    <!-- Temporário: substitua pelo print real do menu -->
+                    <img
+                        src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/31/Geometrydash.png/320px-Geometrydash.png"
+                        alt="Menu principal do jogo"
+                    >
+                    <p class="screenshot-card__label">Menu Principal</p>
+                </article>
+
+                <article class="screenshot-card">
+                    <!-- Temporário: substitua pelo print real da fase 1 -->
+                    <img
+                        src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/31/Geometrydash.png/320px-Geometrydash.png"
+                        alt="Fase 1 — Batismo de Fogo"
+                    >
+                    <p class="screenshot-card__label">Fase 1 — Batismo de Fogo</p>
+                </article>
+
+                <article class="screenshot-card">
+                    <!-- Temporário: substitua pelo print real da fase 2 -->
+                    <img
+                        src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/31/Geometrydash.png/320px-Geometrydash.png"
+                        alt="Fase 2 — Ascensão Tecnológica"
+                    >
+                    <p class="screenshot-card__label">Fase 2 — Ascensão Tecnológica</p>
+                </article>
+
+                <article class="screenshot-card">
+                    <!-- Temporário: substitua pelo print real da fase 3 -->
+                    <img
+                        src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/31/Geometrydash.png/320px-Geometrydash.png"
+                        alt="Fase 3 — Paradoxo da Gravidade"
+                    >
+                    <p class="screenshot-card__label">Fase 3 — Paradoxo da Gravidade</p>
+                </article>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- ========== VÍDEO ========== -->
+    <section class="video-section" id="video">
+        <div class="container">
+            <h2 class="section-title">Gameplay em Vídeo</h2>
+            <!-- Vídeo temporário — substituir pelo vídeo real do Developer Life -->
+            <div class="video-wrapper">
+                <iframe
+                    src="https://www.youtube.com/embed/dQw4w9WgXcQ"
+                    title="Gameplay do Developer Life"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowfullscreen>
+                </iframe>
+            </div>
+            <p style="font-size:0.75rem; color:var(--color-muted); margin-top:0.75rem; text-align:center;">
+                ⚠ Vídeo temporário — será substituído pela gravação real do Developer Life.
+            </p>
+        </div>
+    </section>
+
+    <!-- ========== FASES ========== -->
+    <section class="phases" id="fases">
+        <div class="container">
+            <h2 class="section-title">As Três Fases</h2>
+            <div class="phases__grid">
+
+                <article class="phase-card phase-card--blue">
+                    <p class="phase-card__tag">Fase 01</p>
+                    <h3 class="phase-card__name">O Batismo de Fogo</h3>
+                    <p>
+                        Apenas o cubo. Aprenda o ritmo, desvie dos espinhos e encare
+                        as primeiras plataformas flutuantes. Tons de azul e roxo dominam o cenário.
+                    </p>
+                    <div class="difficulty-badges">
+                        <span class="badge badge--green">Fácil — 400 px/s</span>
+                        <span class="badge badge--yellow">Médio — 600 px/s</span>
+                        <span class="badge badge--red">Difícil — 900 px/s</span>
+                    </div>
+                </article>
+
+                <article class="phase-card phase-card--green">
+                    <p class="phase-card__tag">Fase 02</p>
+                    <h3 class="phase-card__name">A Ascensão Tecnológica</h3>
+                    <p>
+                        Cubo + Nave. Aos 50% da fase, um portal transforma o cubo em nave.
+                        Voe pelo corredor estreito entre serras usando Espaço para subir.
+                    </p>
+                    <div class="difficulty-badges">
+                        <span class="badge badge--green">Fácil</span>
+                        <span class="badge badge--yellow">Médio</span>
+                        <span class="badge badge--red">Difícil</span>
+                    </div>
+                </article>
+
+                <article class="phase-card phase-card--red">
+                    <p class="phase-card__tag">Fase 03</p>
+                    <h3 class="phase-card__name">O Paradoxo da Gravidade</h3>
+                    <p>
+                        Toque portais amarelos para inverter a gravidade instantaneamente.
+                        O zigue-zague entre chão e teto testará seus reflexos ao limite.
+                    </p>
+                    <div class="difficulty-badges">
+                        <span class="badge badge--green">Fácil</span>
+                        <span class="badge badge--yellow">Médio</span>
+                        <span class="badge badge--red">Difícil</span>
+                    </div>
+                </article>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- ========== COMO JOGAR ========== -->
+    <section class="howtoplay" id="como-jogar">
+        <div class="container">
+            <h2 class="section-title">Como Jogar</h2>
+
+            <div class="howtoplay__grid">
+                <div class="step-card">
+                    <span class="step-card__number">01</span>
+                    <h3 class="step-card__title">Pré-requisitos</h3>
+                    <p>Instale o Python 3.10+ e o Pygame. Veja os comandos na seção de download.</p>
+                </div>
+                <div class="step-card">
+                    <span class="step-card__number">02</span>
+                    <h3 class="step-card__title">Execute o Jogo</h3>
+                    <p>Descompacte o arquivo e rode <code>python main.py</code> no terminal.</p>
+                </div>
+                <div class="step-card">
+                    <span class="step-card__number">03</span>
+                    <h3 class="step-card__title">Escolha a Fase</h3>
+                    <p>No menu principal, selecione uma das três fases e a dificuldade desejada.</p>
+                </div>
+                <div class="step-card">
+                    <span class="step-card__number">04</span>
+                    <h3 class="step-card__title">Sobreviva!</h3>
+                    <p>Use os controles abaixo para desviar dos obstáculos no ritmo da música.</p>
+                </div>
+            </div>
+
+            <table class="controls-table">
+                <thead>
+                    <tr>
+                        <th>Tecla</th>
+                        <th>Ação</th>
+                        <th>Modo</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Espaço / ↑ / Clique</td>
+                        <td>Pular</td>
+                        <td>Cubo</td>
+                    </tr>
+                    <tr>
+                        <td>Espaço (segurar)</td>
+                        <td>Subir com a nave</td>
+                        <td>Nave</td>
+                    </tr>
+                    <tr>
+                        <td>Portal amarelo</td>
+                        <td>Inverter gravidade</td>
+                        <td>Gravidade Invertida</td>
+                    </tr>
+                    <tr>
+                        <td>Esc</td>
+                        <td>Pausar / Voltar ao menu</td>
+                        <td>Todos</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- ========== LOG DE DESENVOLVIMENTO ========== -->
+    <section class="devlog" id="devlog">
+        <div class="container">
+            <h2 class="section-title">Log de Desenvolvimento</h2>
+            <div class="timeline">
+
+                <div class="timeline-item">
+                    <p class="timeline-item__date">Semana 1 — Início do Projeto</p>
+                    <h3 class="timeline-item__title">Esqueleto do projeto e estrutura de cenas</h3>
+                    <p>
+                        Criação da estrutura base com o Manager de cenas e a janela do pygame.
+                        Primeiros testes de renderização.
+                    </p>
+                </div>
+
+                <div class="timeline-item">
+                    <p class="timeline-item__date">Semana 2 — Movimento e Física</p>
+                    <h3 class="timeline-item__title">Mapa com scroll e sistema de pulo</h3>
+                    <p>
+                        Implementação do eixo Camera_X para movimentar o cenário.
+                        Física de pulo com gravidade e hitboxes do player.
+                    </p>
+                </div>
+
+                <div class="timeline-item">
+                    <p class="timeline-item__date">Semana 3 — Obstáculos</p>
+                    <h3 class="timeline-item__title">Desenho e colisão de obstáculos</h3>
+                    <p>
+                        Sistema de lista de obstáculos com descarte ao sair da tela.
+                        Detecção de colisão com os espinhos.
+                    </p>
+                </div>
+
+                <div class="timeline-item">
+                    <p class="timeline-item__date">Semana 4 — Cenas e UX</p>
+                    <h3 class="timeline-item__title">Menu, dificuldades, game over e tela de vitória</h3>
+                    <p>
+                        Implementação completa do menu principal com seleção de fase e dificuldade,
+                        tela de game over com barra de progresso e tela de vitória.
+                    </p>
+                </div>
+
+                <div class="timeline-item">
+                    <p class="timeline-item__date">Semana 5 — Fases</p>
+                    <h3 class="timeline-item__title">Fase 2 (nave) e Fase 3 (gravidade invertida)</h3>
+                    <p>
+                        Mecânica de nave com física diferente e portal de transição.
+                        Sistema de inversão de gravidade na fase 3.
+                    </p>
+                </div>
+
+                <div class="timeline-item">
+                    <p class="timeline-item__date">Semana 6 — Polimento</p>
+                    <h3 class="timeline-item__title">Ajustes finais, ranking e saves</h3>
+                    <p>
+                        Sistema de ranking, persistência de save em JSON e ajustes gerais de jogabilidade.
+                    </p>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- ========== EQUIPE ========== -->
+    <section class="team" id="equipe">
+        <div class="container">
+            <h2 class="section-title">A Equipe</h2>
+            <div class="team__grid">
+                <!-- Substitua pelos nomes reais dos membros do grupo -->
+                <div class="member-card">
+                    <div class="member-card__avatar">M</div>
+                    <p class="member-card__name">Mateus Nakata</p>
+                    <p class="member-card__role">Programação &amp; Game Design</p>
+                </div>
+                <!-- Adicione os outros membros do grupo aqui -->
+                <div class="member-card">
+                    <div class="member-card__avatar">?</div>
+                    <p class="member-card__name">Membro 2</p>
+                    <p class="member-card__role">Programação</p>
+                </div>
+                <div class="member-card">
+                    <div class="member-card__avatar">?</div>
+                    <p class="member-card__name">Membro 3</p>
+                    <p class="member-card__role">Arte &amp; Design</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========== DOWNLOAD ========== -->
+    <section class="download" id="download">
+        <div class="container">
+            <h2 class="download__title">Pronto para jogar?</h2>
+            <p class="download__desc">
+                Baixe o pacote completo do Developer Life e siga as instruções abaixo para executar.
+            </p>
+            <!-- Substitua o href pelo link real do arquivo zip -->
+            <a href="developer-life.zip" class="btn btn--primary" download>
+                ⬇ Baixar Developer Life (.zip)
+            </a>
+            <div class="download__requirements">
+                <span>🐍 Python 3.10+</span>
+                <span>🎮 Pygame 2.x</span>
+                <span>💻 Windows / macOS / Linux</span>
+            </div>
+
+            <div style="background: var(--color-surface2); border-radius: var(--radius); padding: 1.5rem; width: 100%; max-width: 42rem; text-align: left; margin-top: 1rem;">
+                <p style="font-family: var(--font-title); font-size: 0.75rem; letter-spacing: 0.1em; color: var(--color-neon); margin-bottom: 1rem;">INSTRUÇÕES DE EXECUÇÃO</p>
+                <ol style="display: flex; flex-direction: column; gap: 0.6rem; list-style: decimal; padding-left: 1.2rem;">
+                    <li style="font-size: 0.88rem; color: var(--color-muted);">
+                        Certifique-se de ter Python instalado: <code style="color:var(--color-text); background:rgba(160,110,232,0.1); padding:0.1rem 0.4rem; border-radius:0.3rem;">python --version</code>
+                    </li>
+                    <li style="font-size: 0.88rem; color: var(--color-muted);">
+                        Instale o Pygame: <code style="color:var(--color-text); background:rgba(160,110,232,0.1); padding:0.1rem 0.4rem; border-radius:0.3rem;">pip install pygame</code>
+                    </li>
+                    <li style="font-size: 0.88rem; color: var(--color-muted);">
+                        Descompacte o arquivo <code style="color:var(--color-text); background:rgba(160,110,232,0.1); padding:0.1rem 0.4rem; border-radius:0.3rem;">developer-life.zip</code>
+                    </li>
+                    <li style="font-size: 0.88rem; color: var(--color-muted);">
+                        Entre na pasta descompactada e execute: <code style="color:var(--color-text); background:rgba(160,110,232,0.1); padding:0.1rem 0.4rem; border-radius:0.3rem;">python main.py</code>
+                    </li>
+                </ol>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========== RODAPÉ ========== -->
+    <footer>
+        <p>
+            Developer Life &mdash; Projeto Pygame 2025 &middot;
+            Desenvolvido por Mateus Nakata e equipe &middot;
+            <a href="https://github.com/insper-classroom" style="color:var(--color-neon);">GitHub</a>
+        </p>
+    </footer>
+
+</body>
+</html>

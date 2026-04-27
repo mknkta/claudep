@@ -15,7 +15,7 @@ ANIM  = 0.8
 
 class VictoryScene:
     """Tela de celebração exibida ao concluir uma fase com sucesso."""
-    def __init__(self, manager, clock, attempts, phase, snapshot):
+    def __init__(self, manager, clock, attempts, phase, snapshot, player_name=""):
         """
         Inicializa a tela de vitória.
 
@@ -26,11 +26,12 @@ class VictoryScene:
             phase: Número da fase concluída.
             snapshot: Surface com o último frame do gameplay.
         """
-        self._manager  = manager
-        self._clock    = clock
-        self._attempts = attempts
-        self._phase    = phase
-        self._snap     = snapshot
+        self._manager     = manager
+        self._clock       = clock
+        self._attempts    = attempts
+        self._phase       = phase
+        self._snap        = snapshot
+        self._player_name = player_name
         self._t        = 0.0
         self._hov      = False
 
@@ -51,7 +52,7 @@ class VictoryScene:
                     import saves
                     saves.reset_attempts()
                     from menu import MenuScene
-                    self._manager.go(MenuScene(self._manager, self._clock))
+                    self._manager.go(MenuScene(self._manager, self._clock, self._player_name))
 
     def update(self, dt):
         """Avança o timer de animação e atualiza estado de hover."""

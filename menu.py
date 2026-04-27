@@ -112,19 +112,21 @@ class _Btn:
 
 
 class MenuScene:
-    """Tela inicial com seleção de fase e acesso ao ranking."""
+    """Tela inicial com seleção de fase e botão Voltar para o ranking."""
 
-    def __init__(self, manager, clock):
+    def __init__(self, manager, clock, player_name=""):
         """
         Inicializa o menu principal.
 
         Args:
             manager: Gerenciador de cenas para transições.
             clock: Clock do pygame.
+            player_name: Nome do jogador atual.
         """
-        self._manager = manager
-        self._clock   = clock
-        self._shapes  = [_Shape() for _ in range(8)]
+        self._manager     = manager
+        self._clock       = clock
+        self._player_name = player_name
+        self._shapes      = [_Shape() for _ in range(8)]
         bw, bh = 260, 90
         gap    = 40
         total  = 3*bw + 2*gap
@@ -134,11 +136,18 @@ class MenuScene:
             _Btn(pygame.Rect(sx + i*(bw+gap), by, bw, bh), f"Fase {i+1}", PHASE_COLORS[i+1])
             for i in range(3)
         ]
+        # botões inferiores
+        self._rank_btn   = _Btn(pygame.Rect(30, SCREEN_HEIGHT - 70, 180, 48),
+                                "Ranking", (140, 100, 220))
+        self._change_btn = _Btn(pygame.Rect(SCREEN_WIDTH - 210, SCREEN_HEIGHT - 70, 180, 48),
+                                "Trocar jogador", (80, 160, 220))
+
         self._tf = pygame.font.SysFont("consolas", 64, bold=True)
         self._sf = pygame.font.SysFont("consolas", 18)
+        self._nf = pygame.font.SysFont("consolas", 20, bold=True)
 
     def handle_events(self, events):
-        """Processa cliques: inicia fase selecionada ou abre ranking."""
+        """Processa cliques: inicia fase, abre ranking ou troca jogador."""
         for e in events:
             if e.type == pygame.MOUSEBUTTONDOWN and e.button == 1:
                 mp = pygame.mouse.get_pos()
@@ -146,13 +155,27 @@ class MenuScene:
                     if btn.clicked(mp, True):
                         audio.play_click()
                         from difficulty import DifficultyScene
-                        self._manager.go(DifficultyScene(self._manager, self._clock, i+1))
+                        self._manager.go(DifficultyScene(
+                            self._manager, self._clock, i+1, self._player_name))
+                if self._rank_btn.clicked(mp, True):
+                    audio.play_click()
+                    from ranking import RankingScene
+                    self._manager.go(RankingScene(
+                        self._manager, self._clock, self._player_name))
+                if self._change_btn.clicked(mp, True):
+                    audio.play_click()
+                    import saves
+                    saves.reset_attempts()
+                    from name_input import NameInputScene
+                    self._manager.go(NameInputScene(self._manager, self._clock))
 
     def update(self, dt):
         """Atualiza hover dos botões e animação das formas decorativas."""
         mp = pygame.mouse.get_pos()
         for b in self._btns:
             b.update(mp)
+        self._rank_btn.update(mp)
+        self._change_btn.update(mp)
         for s in self._shapes:
             s.update(dt)
 
@@ -170,3 +193,11 @@ class MenuScene:
 
         for b in self._btns:
             b.draw(screen)
+
+        # nome do jogador atual (centro inferior)
+        if self._player_name:
+            nt = self._nf.render(f"Jogador: {self._player_name}", True, (160, 140, 200))
+            screen.blit(nt, nt.get_rect(centerx=SCREEN_WIDTH // 2, bottom=SCREEN_HEIGHT - 20))
+
+        self._rank_btn.draw(screen)
+        self._change_btn.draw(screen)

@@ -79,7 +79,7 @@ class GameplayScene:
     """
 
     def __init__(self, world_speed=SPEED_MEDIUM, hitbox_scale=1.0,
-                 zoom=1.0, phase=1, manager=None):
+                 zoom=1.0, phase=1, manager=None, player_name=""):
         """
         Inicializa a cena de gameplay.
 
@@ -89,12 +89,14 @@ class GameplayScene:
             zoom: Fator de zoom da câmera (>1 aproxima).
             phase: Número da fase (1, 2 ou 3).
             manager: Gerenciador de cenas para transições.
+            player_name: Nome do jogador atual.
         """
-        self._manager = manager
-        self._phase   = phase
-        self._speed   = world_speed
-        self._hscale  = hitbox_scale
-        self._zoom    = zoom
+        self._manager     = manager
+        self._phase       = phase
+        self._speed       = world_speed
+        self._hscale      = hitbox_scale
+        self._zoom        = zoom
+        self._player_name = player_name
 
         self.player = Player()
         self._apply_hscale()
@@ -274,23 +276,27 @@ class GameplayScene:
         audio.stop()
 
     def _open_gameover(self):
-        """Transiciona para a tela de game over."""
+        """Transiciona para a tela de game over e salva progresso no ranking."""
         if not self._manager:
             return
         pct = min(audio.get_time() / self._duration * 100, 100.0)
+        saves.update_player_ranking(self._player_name, pct, self._attempts)
         from gameover import GameOverScene
         self._manager.go(GameOverScene(
             self._manager, self._clock, self._phase,
             self._speed, self._hscale, self._zoom,
-            self._attempts, pct, self._snapshot))
+            self._attempts, pct, self._snapshot,
+            player_name=self._player_name))
 
     def _win(self):
-        """Transiciona para a tela de vitória."""
+        """Transiciona para a tela de vitória e salva 100% no ranking."""
         snap = self._surf.copy()
         audio.stop()
+        saves.update_player_ranking(self._player_name, 100.0, self._attempts)
         from victory import VictoryScene
         self._manager.go(VictoryScene(
-            self._manager, self._clock, self._attempts, self._phase, snap))
+            self._manager, self._clock, self._attempts, self._phase, snap,
+            player_name=self._player_name))
 
     # ── draw ──────────────────────────────────────────────────────────
     def draw(self, screen):

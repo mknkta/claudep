@@ -1,3 +1,15 @@
 {
-  "attempts": 0
+  "attempts": 0,
+  "ranking": [
+    {
+      "name": "msteus",
+      "best_pct": 45.36533333333333,
+      "attempts": 1
+    },
+    {
+      "name": "g",
+      "best_pct": 12.787777777777778,
+      "attempts": 1
+    }
+  ]
 }

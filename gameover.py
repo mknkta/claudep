@@ -15,7 +15,7 @@ BW, BH = 200, 55
 class GameOverScene:
     """Tela de fim de jogo após a morte do player."""
     def __init__(self, manager, clock, phase, speed, hscale, zoom,
-                 attempts, progress_pct, snapshot):
+                 attempts, progress_pct, snapshot, player_name=""):
         """
         Inicializa a tela de game over.
 
@@ -29,16 +29,18 @@ class GameOverScene:
             attempts: Total de tentativas acumuladas.
             progress_pct: Percentual da fase completado (0–100).
             snapshot: Surface com o último frame antes da morte.
+            player_name: Nome do jogador atual.
         """
-        self._manager  = manager
-        self._clock    = clock
-        self._phase    = phase
-        self._speed    = speed
-        self._hscale   = hscale
-        self._zoom     = zoom
-        self._attempts = attempts
-        self._pct      = progress_pct
-        self._snap     = snapshot
+        self._manager     = manager
+        self._clock       = clock
+        self._phase       = phase
+        self._speed       = speed
+        self._hscale      = hscale
+        self._zoom        = zoom
+        self._attempts    = attempts
+        self._pct         = progress_pct
+        self._snap        = snapshot
+        self._player_name = player_name
 
         self._bf = pygame.font.SysFont("consolas", 48, bold=True)
         self._mf = pygame.font.SysFont("consolas", 26)
@@ -69,7 +71,8 @@ class GameOverScene:
     def _restart(self):
         """Reinicia a fase com os mesmos parâmetros."""
         from gameplay import GameplayScene
-        s = GameplayScene(self._speed, self._hscale, self._zoom, self._phase, self._manager)
+        s = GameplayScene(self._speed, self._hscale, self._zoom, self._phase,
+                          self._manager, player_name=self._player_name)
         s.set_clock(self._clock)
         self._manager.go(s)
 
@@ -78,7 +81,7 @@ class GameOverScene:
         import saves
         saves.reset_attempts()
         from menu import MenuScene
-        self._manager.go(MenuScene(self._manager, self._clock))
+        self._manager.go(MenuScene(self._manager, self._clock, self._player_name))
 
     def update(self, dt):
         """Atualiza hover dos botões e toca som ao entrar."""

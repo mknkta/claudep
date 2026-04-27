@@ -1,7 +1,8 @@
 """
 saves.py — Persistência de dados do jogo em arquivo JSON.
 
-Armazena tentativas acumuladas e o ranking dos 10 melhores jogadores.
+Armazena tentativas acumuladas e o ranking dos 10 melhores jogadores
+(organizado por maior porcentagem completada).
 O arquivo é salvo em save.json na raiz do projeto.
 """
 
@@ -51,21 +52,28 @@ def reset_attempts():
 
 
 def get_ranking() -> list:
-    """Retorna a lista de ranking salva (até 10 entradas, ordem decrescente)."""
+    """Retorna a lista de ranking salva (até 10 entradas, ordem decrescente por best_pct)."""
     return _load().get("ranking", [])
 
 
-def add_to_ranking(name: str, score: int):
+def update_player_ranking(name: str, pct: float, attempts: int):
     """
-    Adiciona uma entrada ao ranking, mantendo apenas o top 10 em ordem decrescente.
+    Atualiza o ranking do jogador. Só salva se a porcentagem for maior que o recorde atual.
+    Cada jogador tem apenas uma entrada; o top 10 é mantido.
 
     Args:
         name: Nome do jogador.
-        score: Pontuação obtida.
+        pct: Porcentagem completada nesta partida (0–100).
+        attempts: Número de tentativas usadas.
     """
     d = _load()
     ranking = d.get("ranking", [])
-    ranking.append({"name": name, "score": score})
-    ranking.sort(key=lambda x: x["score"], reverse=True)
+    existing = next((e for e in ranking if e["name"] == name), None)
+    if existing is None:
+        ranking.append({"name": name, "best_pct": pct, "attempts": attempts})
+    elif pct > existing["best_pct"]:
+        existing["best_pct"] = pct
+        existing["attempts"] = attempts
+    ranking.sort(key=lambda x: x["best_pct"], reverse=True)
     d["ranking"] = ranking[:10]
     _save(d)

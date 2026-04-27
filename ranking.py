@@ -1,8 +1,8 @@
 """
 ranking.py — Tela de ranking (RankingScene).
 
-Exibe o top 10 de pontuações salvas em arquivo, ordenado de forma
-decrescente. Jogadores com maior pontuação aparecem no topo.
+Exibe o top 10 de jogadores ordenados pela maior porcentagem completada.
+Acessível pelo botão "Voltar" no MenuScene.
 """
 
 import pygame
@@ -22,25 +22,17 @@ MEDAL_COLORS = [GOLD, SILVER, BRONZE]
 
 
 class RankingScene:
-    """Tela de ranking com top 10 pontuações ordenadas de forma decrescente."""
+    """Tela de ranking com top 10 jogadores ordenados por maior porcentagem."""
 
-    def __init__(self, manager, clock, highlight: str = ""):
-        """
-        Inicializa a tela de ranking.
-
-        Args:
-            manager: Gerenciador de cenas.
-            clock: Clock do pygame.
-            highlight: Nome do jogador a destacar (recém-salvo).
-        """
-        self._manager   = manager
-        self._clock     = clock
-        self._highlight = highlight
-        self._ranking   = saves.get_ranking()
+    def __init__(self, manager, clock, player_name: str = ""):
+        self._manager     = manager
+        self._clock       = clock
+        self._player_name = player_name
+        self._ranking     = saves.get_ranking()
 
         self._tf = pygame.font.SysFont("consolas", 48, bold=True)
-        self._rf = pygame.font.SysFont("consolas", 24, bold=True)
-        self._sf = pygame.font.SysFont("consolas", 20)
+        self._rf = pygame.font.SysFont("consolas", 22, bold=True)
+        self._sf = pygame.font.SysFont("consolas", 18)
         self._bf = pygame.font.SysFont("consolas", 22, bold=True)
 
         bw, bh = 220, 50
@@ -60,29 +52,43 @@ class RankingScene:
                 self._go_menu()
 
     def _go_menu(self):
-        """Reseta tentativas e volta ao menu principal."""
-        saves.reset_attempts()
+        """Volta ao menu principal mantendo o nome do jogador."""
         from menu import MenuScene
-        self._manager.go(MenuScene(self._manager, self._clock))
+        self._manager.go(MenuScene(self._manager, self._clock, self._player_name))
 
     def update(self, dt):
-        """Atualiza estado de hover do botão e toca som ao entrar."""
+        """Atualiza estado de hover do botão."""
         was_hov   = self._hov
         self._hov = self._btn.collidepoint(pygame.mouse.get_pos())
         if self._hov and not was_hov:
             audio.play_hover()
 
     def draw(self, screen):
-        """Renderiza o painel de ranking com posições, nomes e pontuações."""
+        """Renderiza o painel de ranking com posições, nomes, porcentagem e tentativas."""
         screen.fill(BG)
 
         # título
         title = self._tf.render("RANKING", True, PURPLE)
         screen.blit(title, title.get_rect(centerx=SCREEN_WIDTH // 2, y=28))
 
+        # cabeçalho de colunas
+        hf = pygame.font.SysFont("consolas", 16)
+        header_y = 88
+        col_name  = 160
+        col_pct   = SCREEN_WIDTH // 2 + 60
+        col_tries = SCREEN_WIDTH // 2 + 220
+        pw = 680
+        panel_x = (SCREEN_WIDTH - pw) // 2
+
+        for text, cx in [("NOME", panel_x + col_name - panel_x),
+                          ("MELHOR %", col_pct),
+                          ("TENTATIVAS", col_tries)]:
+            ht = hf.render(text, True, DIM)
+            screen.blit(ht, ht.get_rect(centerx=cx, y=header_y))
+
         # painel central
-        pw, ph = 640, 440
-        panel = pygame.Rect((SCREEN_WIDTH - pw) // 2, 100, pw, ph)
+        ph_rect = 420
+        panel = pygame.Rect((SCREEN_WIDTH - pw) // 2, 108, pw, ph_rect)
         pygame.draw.rect(screen, (25, 20, 40), panel, border_radius=12)
         pygame.draw.rect(screen, (80, 60, 120), panel, width=2, border_radius=12)
 
@@ -92,33 +98,36 @@ class RankingScene:
         else:
             row_h = 40
             for i, entry in enumerate(self._ranking):
-                y = panel.y + 16 + i * row_h
-                is_hl = entry["name"] == self._highlight
+                y      = panel.y + 10 + i * row_h
+                is_hl  = entry["name"] == self._player_name
+                best   = entry.get("best_pct", 0.0)
+                tries  = entry.get("attempts", 0)
 
-                # fundo highlight
+                # fundo highlight do jogador atual
                 if is_hl:
                     hl = pygame.Rect(panel.x + 8, y + 2, panel.w - 16, row_h - 4)
                     pygame.draw.rect(screen, (50, 35, 80), hl, border_radius=6)
 
-                # cor da posição
-                if i < 3:
-                    pos_col = MEDAL_COLORS[i]
-                else:
-                    pos_col = WHITE if is_hl else DIM
+                # cor da medalha
+                pos_col = MEDAL_COLORS[i] if i < 3 else (WHITE if is_hl else DIM)
 
                 # posição
                 pos_t = self._rf.render(f"#{i+1:02d}", True, pos_col)
-                screen.blit(pos_t, (panel.x + 20, y + 8))
+                screen.blit(pos_t, (panel.x + 16, y + 10))
 
                 # nome
                 name_col = (255, 220, 80) if is_hl else WHITE
-                name_t = self._rf.render(entry["name"][:16], True, name_col)
-                screen.blit(name_t, (panel.x + 90, y + 8))
+                name_t   = self._rf.render(entry["name"][:16], True, name_col)
+                screen.blit(name_t, (panel.x + 70, y + 10))
 
-                # pontuação alinhada à direita
-                score_t = self._rf.render(f"{entry['score']:,}", True, pos_col)
-                screen.blit(score_t, score_t.get_rect(
-                    right=panel.right - 20, y=y + 8))
+                # porcentagem (centralizada)
+                pct_str = f"{best:.1f}%"
+                pct_t   = self._rf.render(pct_str, True, pos_col)
+                screen.blit(pct_t, pct_t.get_rect(centerx=col_pct, y=y + 10))
+
+                # tentativas (centralizado)
+                tries_t = self._rf.render(str(tries), True, DIM if not is_hl else WHITE)
+                screen.blit(tries_t, tries_t.get_rect(centerx=col_tries, y=y + 10))
 
                 # separador
                 if i < len(self._ranking) - 1:
